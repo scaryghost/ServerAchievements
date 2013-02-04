@@ -7,7 +7,6 @@ struct Achievement {
     var bool completed;
 };
 
-var PlayerController pcOwner;
 var array<Achievement> achievements;
 
 function killedMonster(Pawn target, class<DamageType> damageType);
@@ -16,6 +15,6 @@ function damagedMonster(int damage, Pawn target, class<DamageType> damageType);
 function achievementCompleted(int index) {
     if (!achievements[index].completed) {
         achievements[index].completed= true;
-        pcOwner.myHUD.ShowPopupNotification(5.0, 3, Achievements[Index].Title);
+        PlayerController(Owner).myHUD.ShowPopupNotification(5.0, 3, Achievements[Index].Title);
     }
 }

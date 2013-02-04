@@ -35,7 +35,7 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
         saRI.ownerPRI= pri;
 
         for(i= 0; i < loadedAchievementPacks.Length; i++) {
-            saRI.addAchievementPack(Spawn(loadedAchievementPacks[i]));
+            saRI.addAchievementPack(Spawn(loadedAchievementPacks[i], pri.Owner));
         }
     }
 

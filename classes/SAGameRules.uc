@@ -24,6 +24,7 @@ function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> dam
 
     if (!super.PreventDeath(Killed, Killer, damageType, HitLocation)) {
         sari= class'SAReplicationInfo'.static.findSAri(Killer.PlayerReplicationInfo);
+        sari.getAchievementPacks(achievementPacks);
         for(i= 0; i < achievementPacks.Length; i++) {
             achievementPacks[i].killedMonster(Killed, DamageType);
         }

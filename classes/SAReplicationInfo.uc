@@ -5,6 +5,7 @@ var array<AchievementPackBase> achievementPacks;
 
 simulated function addAchievementPack(AchievementPackBase pack) {
     achievementPacks[achievementPacks.Length]= pack;
+    pack.pcOwner= PlayerController(ownerPRI.Owner);
 }
 
 simulated function removeAchievementPack(AchievementPackBase pack) {

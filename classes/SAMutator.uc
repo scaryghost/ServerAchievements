@@ -41,3 +41,9 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
 
     return true;
 }
+
+defaultproperties {
+    GroupName="KFServerAchievements"
+    FriendlyName="Server Achievements v1.0"
+    Description="Loads custom achievements into the game"
+}

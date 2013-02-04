@@ -1,4 +1,4 @@
-class AchievementPackBase extends Actor
+class AchievementPackBase extends Info
     abstract;
 
 struct Achievement {
@@ -7,12 +7,15 @@ struct Achievement {
     var bool completed;
 };
 
+var PlayerController pcOwner;
 var array<Achievement> achievements;
 
 function killedMonster(Pawn target, class<DamageType> damageType);
 function damagedMonster(int damage, Pawn target, class<DamageType> damageType);
 
 function achievementCompleted(int index) {
-    achievements[index].completed= true;
-    PlayerController(Owner).myHUD.ShowPopupNotification(5.0, 3, Achievements[Index].Title);
+    if (!achievements[index].completed) {
+        achievements[index].completed= true;
+        pcOwner.myHUD.ShowPopupNotification(5.0, 3, Achievements[Index].Title);
+    }
 }

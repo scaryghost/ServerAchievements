@@ -3,6 +3,12 @@ class SAReplicationInfo extends ReplicationInfo;
 var PlayerReplicationInfo ownerPRI;
 var array<AchievementPackBase> achievementPacks;
 
+replication {
+    reliable if (bNetDirty && Role == ROLE_Authority)
+        ownerPRI;
+}
+
+
 simulated function addAchievementPack(AchievementPackBase pack) {
     achievementPacks[achievementPacks.Length]= pack;
 }
@@ -39,3 +45,7 @@ static function SAReplicationInfo findSAri(PlayerReplicationInfo pri) {
     return none;
 }
 
+defaultproperties {
+	RemoteRole=ROLE_SimulatedProxy
+	bAlwaysRelevant=True
+}

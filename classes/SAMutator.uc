@@ -13,6 +13,7 @@ function PostBeginPlay() {
         Destroy();
         return;
     }
+    AddToPackageMap();
 
     grObj= Spawn(class'SAGameRules');
     grObj.NextGameRules= Level.Game.GameRulesModifiers;
@@ -20,6 +21,7 @@ function PostBeginPlay() {
 
     for(i= 0; i < achievementPackNames.Length; i++) {
         loadedAchievementPacks[i]= class<AchievementPackBase>(DynamicLoadObject(achievementPAckNames[i], class'Class'));
+        AddToPackageMap(string(loadedAchievementPacks[i].Outer.name));
     }
 }
 

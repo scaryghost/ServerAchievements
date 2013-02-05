@@ -22,7 +22,7 @@ event PostBeginPlay();
 
 // Overridden to Grab the Stats and Achievements from Steam on the Client
 simulated event PostNetBeginPlay() {
-    if ( Level.NetMode == NM_Client ) {
+    if ( Level.NetMode != NM_DedicatedServer) {
         PCOwner= Level.GetLocalPlayerController();
     }
 }

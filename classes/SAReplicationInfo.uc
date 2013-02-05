@@ -8,7 +8,6 @@ replication {
         ownerPRI;
 }
 
-
 simulated function addAchievementPack(AchievementPackBase pack) {
     achievementPacks[achievementPacks.Length]= pack;
 }
@@ -26,7 +25,6 @@ simulated function removeAchievementPack(AchievementPackBase pack) {
 
 simulated function getAchievementPacks(out array<AchievementPackBase> packs) {
     local int i;
-
     for(i= 0; i < achievementPacks.Length; i++) {
         packs[i]= achievementPacks[i];
     }
@@ -46,6 +44,6 @@ static function SAReplicationInfo findSAri(PlayerReplicationInfo pri) {
 }
 
 defaultproperties {
-	RemoteRole=ROLE_SimulatedProxy
-	bAlwaysRelevant=True
+    RemoteRole=ROLE_SimulatedProxy
+    bAlwaysRelevant=True
 }

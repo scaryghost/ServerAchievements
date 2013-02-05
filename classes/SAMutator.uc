@@ -4,6 +4,7 @@ class SAMutator extends Mutator
 var() config array<string> achievementPackNames;
 
 var array<class<AchievementPackBase> > loadedAchievementPacks;
+var array<SAReplicationInfo> saRIs;
 
 function PostBeginPlay() {
     local GameRules grObj;
@@ -26,22 +27,30 @@ function PostBeginPlay() {
 }
 
 function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
-    local int i;
     local PlayerReplicationInfo pri;
     local SAReplicationInfo saRI;
 
     if (PlayerReplicationInfo(Other) != none && 
             PlayerReplicationInfo(Other).Owner != none) {
         pri= PlayerReplicationInfo(Other);
-        saRI= spawn(class'SAReplicationInfo', pri.Owner);
+        saRI= Spawn(class'SAReplicationInfo', pri.Owner);
         saRI.ownerPRI= pri;
-
-        for(i= 0; i < loadedAchievementPacks.Length; i++) {
-            saRI.addAchievementPack(Spawn(loadedAchievementPacks[i], pri.Owner));
-        }
+        saRIs[saRIs.Length]= saRI;
+        SetTimer(0.1, false);
     }
 
     return true;
+}
+
+function Timer() {
+    local int i, j;
+
+    for(i= 0; i < saRIs.Length; i++) {
+        for(j= 0; j < loadedAchievementPacks.Length; j++) {
+            saRIs[i].addAchievementPack(Spawn(loadedAchievementPacks[j], saRIs[i].Owner));
+        }
+    }
+    saRIs.Length= 0;
 }
 
 defaultproperties {

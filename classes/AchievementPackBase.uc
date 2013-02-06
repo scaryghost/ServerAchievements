@@ -35,13 +35,29 @@ simulated event PostNetBeginPlay() {
 }
 
 simulated event notifyProgress(int index, int progress, int maxProgress) {
-    PCOwner.myHUD.ShowPopupNotification(5.0, 2, achievements[index].title@"-"@progress $ "/" $ maxProgress, achievements[index].image);
+    local int i;
+
+    for(i= 0; i < PCOwner.Player.LocalInteractions.Length; i++) {
+        if (SAInteraction(PCOwner.Player.LocalInteractions[i]) != none) {
+            SAInteraction(PCOwner.Player.LocalInteractions[i]).addMessage("Achivement In Progress", 
+                achievements[index].title@"("$ progress $ "/" $ maxProgress $ ")", achievements[index].image);
+            break;
+        }
+    }
 }
 
 simulated event achievementCompleted(int index) {
+    local int i;
+
     if (!achievements[index].completed) {
         achievements[index].completed= true;
-        PCOwner.myHUD.ShowPopupNotification(5.0, 2, achievements[index].title, achievements[index].image);
+        for(i= 0; i < PCOwner.Player.LocalInteractions.Length; i++) {
+            if (SAInteraction(PCOwner.Player.LocalInteractions[i]) != none) {
+                SAInteraction(PCOwner.Player.LocalInteractions[i]).addMessage("Achivement Unlocked!", 
+                    achievements[index].title, achievements[index].image);
+                break;
+            }
+        }
     }
 }
 

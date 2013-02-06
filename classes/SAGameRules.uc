@@ -21,15 +21,25 @@ function int NetDamage(int OriginalDamage, int Damage, pawn injured, pawn instig
 
 function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> damageType, vector HitLocation) {
     local int i;
-    local SAReplicationInfo killerSAri;
+    local SAReplicationInfo playerSAri;
     local array<AchievementPackBase> achievementPacks;
 
     if (!super.PreventDeath(Killed, Killer, damageType, HitLocation)) {
-        killerSAri= class'SAReplicationInfo'.static.findSAri(Killer.PlayerReplicationInfo);
-        if (killerSAri != none) {
-            killerSAri.getAchievementPacks(achievementPacks);
-            for(i= 0; i < achievementPacks.Length; i++) {
-                achievementPacks[i].killedMonster(Killed, DamageType);
+        if (KFPlayerController(Killer) != none) {
+            playerSAri= class'SAReplicationInfo'.static.findSAri(Killer.PlayerReplicationInfo);
+            if (playerSAri != none) {
+                playerSAri.getAchievementPacks(achievementPacks);
+                for(i= 0; i < achievementPacks.Length; i++) {
+                    achievementPacks[i].killedMonster(Killed, DamageType);
+                }
+            }
+        } else if(KFHumanPawn(Killed) != none) {
+            playerSAri= class'SAReplicationInfo'.static.findSAri(Killed.PlayerReplicationInfo);
+            if (playerSAri != none) {
+                playerSAri.getAchievementPacks(achievementPacks);
+                for(i= 0; i < achievementPacks.Length; i++) {
+                    achievementPacks[i].playerDied(Killer, DamageType);
+                }
             }
         }
         return false;

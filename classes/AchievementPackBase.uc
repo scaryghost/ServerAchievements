@@ -21,6 +21,7 @@ replication {
         achievementCompleted, notifyProgress;
 }
 
+function playerDied(Controller killer, class<DamageType> damageType);
 function killedMonster(Pawn target, class<DamageType> damageType);
 function damagedMonster(int damage, Pawn target, class<DamageType> damageType);
 
@@ -29,6 +30,7 @@ event PostBeginPlay();
 simulated event PostNetBeginPlay() {
     if ( Level.NetMode != NM_DedicatedServer) {
         PCOwner= Level.GetLocalPlayerController();
+        PCOwner.Player.InteractionMaster.AddInteraction("ServerAchievements.SAInteraction", PCOwner.Player);
     }
 }
 

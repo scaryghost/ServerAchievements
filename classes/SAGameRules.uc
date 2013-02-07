@@ -47,3 +47,21 @@ function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> dam
     return true;
 }
 
+function bool CheckEndGame(PlayerReplicationInfo Winner, string Reason) {
+    local int i, j;
+    local SAReplicationInfo playerSAri;
+    local array<AchievementPackBase> achievementPacks;
+
+    if (super.CheckEndGame(Winner, Reason)) {
+        for(i= 0; i < Level.GRI.PRIArray.Length; i++) {
+            playerSAri= class'SAReplicationInfo'.static.findSAri(Level.GRI.PRIArray[i]);
+            playerSAri.getAchievementPacks(achievementPacks);
+            for(j= 0; j < achievementPacks.Length; j++) {
+                achievementPacks[i].matchEnd(class'KFGameType'.static.GetCurrentMapName(Level), Level.Game.GameDifficulty, 
+                        KFGameType(Level.Game).KFGameLength);
+            }
+        }
+        return true;
+    }
+    return false;
+}

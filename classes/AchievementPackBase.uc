@@ -15,17 +15,33 @@ struct Achievement {
 
 var PlayerController PCOwner;
 var array<Achievement> achievements;
+var bool broadcastedWaveEnd;
 
 replication {
     unreliable if (Role == ROLE_AUTHORITY) 
         achievementCompleted, notifyProgress;
 }
 
+function matchEnd(string mapname, float difficulty, int length);
+function waveStart(int waveNum);
+function waveEnd(int waveNum);
 function playerDied(Controller killer, class<DamageType> damageType);
 function killedMonster(Pawn target, class<DamageType> damageType);
 function damagedMonster(int damage, Pawn target, class<DamageType> damageType);
 
-event PostBeginPlay();
+event PostBeginPlay() {
+    SetTimer(1.0, true);
+}
+
+function Timer() {
+    if (!broadcastedWaveEnd && KFGameType(Level.Game) != none && !KFGameType(Level.Game).bWaveInProgress) {
+        waveEnd(KFGameType(Level.Game).WaveNum);
+        broadcastedWaveEnd= true;
+    } else if (broadcastedWaveEnd && KFGameType(Level.Game) != none && KFGameType(Level.Game).bWaveInProgress) {
+        waveStart(KFGameType(Level.Game).WaveNum);
+        broadcastedWaveEnd= false;
+    }
+}
 
 simulated event PostNetBeginPlay() {
     if ( Level.NetMode != NM_DedicatedServer) {
@@ -71,5 +87,7 @@ defaultproperties {
     bStatic=false
     bNoDelete=false
     bHidden=true
+
+    broadcastedWaveEnd= true
 }
 

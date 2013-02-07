@@ -11,6 +11,7 @@ struct Achievement {
     var int maxProgress;
     var int notifyProgress;
     var byte timesNotified;
+    var byte canEarn;
 };
 
 var PlayerController PCOwner;
@@ -22,7 +23,7 @@ replication {
         achievementCompleted, notifyProgress;
 }
 
-function matchEnd(string mapname, float difficulty, int length);
+function matchEnd(string mapname, float difficulty, int length, byte result);
 function waveStart(int waveNum);
 function waveEnd(int waveNum);
 function playerDied(Controller killer, class<DamageType> damageType);
@@ -38,8 +39,13 @@ function Timer() {
         waveEnd(KFGameType(Level.Game).WaveNum);
         broadcastedWaveEnd= true;
     } else if (broadcastedWaveEnd && KFGameType(Level.Game) != none && KFGameType(Level.Game).bWaveInProgress) {
-        waveStart(KFGameType(Level.Game).WaveNum);
+        waveStart(KFGameType(Level.Game).WaveNum + 1);
         broadcastedWaveEnd= false;
+    }
+    if (KFGameReplicationInfo(Level.Game.GameReplicationInfo).EndGameType != 0) {
+        matchEnd(class'KFGameType'.static.GetCurrentMapName(Level), Level.Game.GameDifficulty, 
+            KFGameType(Level.Game).KFGameLength, KFGameReplicationInfo(Level.Game.GameReplicationInfo).EndGameType);
+        SetTimer(0, false);
     }
 }
 

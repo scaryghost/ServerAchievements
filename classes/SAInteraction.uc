@@ -65,6 +65,7 @@ function PostRender(Canvas canvas) {
             messageQueue.remove(0, 1);
             if (messageQueue.Length != 0) {
                 NotificationPhaseStartTime= ViewportOwner.Actor.Level.TimeSeconds;
+                NotificationPhase= 0;
             } else {
                 bVisible= false;
             }

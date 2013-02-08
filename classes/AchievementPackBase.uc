@@ -14,6 +14,7 @@ struct Achievement {
     var byte canEarn;
 };
 
+var float flushPeriod, flushTimer;
 var PlayerController PCOwner;
 var array<Achievement> achievements;
 var bool broadcastedWaveEnd;
@@ -21,7 +22,7 @@ var string packName;
 
 replication {
     unreliable if (Role == ROLE_AUTHORITY) 
-        achievementCompleted, notifyProgress;
+        achievementCompleted, notifyProgress, flushToClient;
 }
 
 function matchEnd(string mapname, float difficulty, int length, byte result);
@@ -36,6 +37,8 @@ event PostBeginPlay() {
 }
 
 function Timer() {
+    local int i;
+
     if (!broadcastedWaveEnd && KFGameType(Level.Game) != none && !KFGameType(Level.Game).bWaveInProgress) {
         waveEnd(KFGameType(Level.Game).WaveNum);
         broadcastedWaveEnd= true;
@@ -48,6 +51,15 @@ function Timer() {
             KFGameType(Level.Game).KFGameLength, KFGameReplicationInfo(Level.Game.GameReplicationInfo).EndGameType);
         SetTimer(0, false);
     }
+    flushTimer+= 1.0;
+    if (flushTimer > flushPeriod) {
+        for(i= 0; i < achievements.Length; i++) {
+            if (achievements[i].notifyProgress != 0) {
+                flushToClient(i, achievements[i].progress);
+            }
+        }
+        flushTimer= 0;
+    }
 }
 
 simulated event PostNetBeginPlay() {
@@ -55,6 +67,10 @@ simulated event PostNetBeginPlay() {
         PCOwner= Level.GetLocalPlayerController();
         PCOwner.Player.InteractionMaster.AddInteraction("ServerAchievements.SAInteraction", PCOwner.Player);
     }
+}
+
+simulated event flushToClient(int index, int progress) {
+    achievements[index].progress= progress;
 }
 
 simulated event notifyProgress(int index, int progress, int maxProgress) {
@@ -96,5 +112,6 @@ defaultproperties {
     bHidden=true
 
     broadcastedWaveEnd= true
+    flushPeriod= 10.0
 }
 

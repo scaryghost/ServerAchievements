@@ -8,6 +8,16 @@ replication {
         ownerPRI;
 }
 
+simulated function PostNetBeginPlay() {
+    local AchievementPackBase pack;
+
+    foreach DynamicActors(class'AchievementPackBase', pack) {
+        if (pack.Owner == Owner) {
+            addAchievementPack(pack);
+        }
+    }
+}
+
 simulated function addAchievementPack(AchievementPackBase pack) {
     achievementPacks[achievementPacks.Length]= pack;
 }

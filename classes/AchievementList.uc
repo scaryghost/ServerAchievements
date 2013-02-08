@@ -61,11 +61,9 @@ function DrawAchievement(Canvas Canvas, int Index, float X, float Y, float Width
     if ( currentPack.achievements[Index].completed) {
         Canvas.DrawTile(currentPack.achievements[Index].image, IconSize, IconSize, 0, 0, 64, 64);
     }
-/*
     else {
-        Canvas.DrawTile(KFStatsAndAchievements.achievements[Index].LockedIcon, IconSize, IconSize, 0, 0, 64, 64);
+        Canvas.DrawTile(Texture'KillingFloorHUD.Achievements.KF_Achievement_Lock', IconSize, IconSize, 0, 0, 64, 64);
     }
-*/
 
     TempX += IconSize + IconToNameSpacing * Width;
     TempY += TextTopOffset * Height;
@@ -86,20 +84,20 @@ function DrawAchievement(Canvas Canvas, int Index, float X, float Y, float Width
         Canvas.SetPos(TempX + 3.0, TempY + 3.0);
         if (currentPack.achievements[Index].progress < currentPack.achievements[Index].maxProgress) {
             Canvas.DrawTileStretched(ProgressBarForeground, ((ProgressBarWidth * Width) - 6.0) * (float(currentPack.achievements[Index].progress) / float(currentPack.achievements[Index].maxProgress)), ProgressBarHeight * Height - 6.0);
+            ProgressString = currentPack.achievements[Index].progress$"/"$currentPack.achievements[Index].maxProgress;
         }
-        else
-        {
+        else {
             Canvas.DrawTileStretched(ProgressBarForeground, ProgressBarWidth * Width - 6.0, ProgressBarHeight * Height - 6.0);
+            ProgressString = currentPack.achievements[Index].maxProgress$"/"$currentPack.achievements[Index].maxProgress;
         }
 
         // Draw Progress Text
-        ProgressString = currentPack.achievements[Index].progress$"/"$currentPack.achievements[Index].maxProgress;
         SectionStyle.DrawText(Canvas, MSAT_Blurry, TempX - 150 - (ProgressTextSpacing * Width), TempY, 150, (TextHeight * Height), TXTA_Right, ProgressString, FNS_Medium);
     }
 }
 
 function float AchievementHeight(Canvas c) {
-    return (MenuOwner.ActualHeight() / 4.0) - 1.0;
+    return (MenuOwner.ActualHeight() / 6.0) - 1.0;
 }
 
 defaultproperties {

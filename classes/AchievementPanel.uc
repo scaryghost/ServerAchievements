@@ -8,8 +8,6 @@ function InitComponent(GUIController MyController, GUIComponent MyOwner) {
     packNames.OnChange= InternalOnChange;
     packNames.OnLoadINI= InternalOnLoadINI;
 
-    i_BGStats.ManageComponent(packNames);
-    i_BGStats.ManageComponent(lb_StatSelect);
     super.InitComponent(MyController, MyOwner);
 }
 
@@ -29,6 +27,7 @@ function InternalOnLoadINI(GUIComponent sender, string s) {
 
     ownerSAri= class'SAReplicationInfo'.static.findSAri(PlayerOwner().PlayerReplicationInfo);
     ownerSAri.getAchievementPacks(packs);
+    packNames.ResetComponent();
     for(i= 0; i < ownerSAri.achievementPacks.Length; i++) {
         packNames.AddItem(packs[i].packName);
     }
@@ -40,11 +39,11 @@ defaultproperties {
         bReadOnly=True
         bAlwaysNotify=True
         ComponentJustification=TXTA_Left
-        Caption="Player"
+        Caption="Achievement Packs"
         IniOption="@Internal"
         Hint="View achievement list for selected achievement pack"
         TabOrder=3
-        WinTop= 0.085
+        WinTop= 0.0135
         WinLeft=0.25
     End Object
     packNames=moComboBox'ServerAchievements.AchievementPanel.packComboBox'
@@ -52,18 +51,18 @@ defaultproperties {
     Begin Object Class=GUISectionBackground Name=BGStats
         bFillClient=True
         Caption="Achievements"
-        WinTop=0.058063
-        WinLeft=0.019240
-        WinWidth=0.961520
+        WinTop=0.054063
+        WinLeft=0.012240
+        WinWidth=0.981520
         WinHeight=0.896032
     End Object
     i_BGStats=GUISectionBackground'ServerAchievements.AchievementPanel.BGStats'
 
     Begin Object Class=AchievementListBox Name=listBox
-        WinTop=0.097760
-        WinLeft=0.029240
-        WinWidth=0.941520
-        WinHeight=0.892836
+        WinTop=0.090760
+        WinLeft=0.019240
+        WinWidth=0.97
+        WinHeight=0.80
     End Object
     lb_StatSelect=AchievementListBox'ServerAchievements.AchievementPanel.listBox'
 }

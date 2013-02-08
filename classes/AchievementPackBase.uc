@@ -17,6 +17,7 @@ struct Achievement {
 var PlayerController PCOwner;
 var array<Achievement> achievements;
 var bool broadcastedWaveEnd;
+var string packName;
 
 replication {
     unreliable if (Role == ROLE_AUTHORITY) 

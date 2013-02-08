@@ -79,7 +79,7 @@ simulated event notifyProgress(int index, int progress, int maxProgress) {
     for(i= 0; i < PCOwner.Player.LocalInteractions.Length; i++) {
         if (SAInteraction(PCOwner.Player.LocalInteractions[i]) != none) {
             SAInteraction(PCOwner.Player.LocalInteractions[i]).addMessage("Achivement In Progress", 
-                achievements[index].title@"("$ progress $ "/" $ maxProgress $ ")", achievements[index].image);
+                achievements[index].title@";("$ progress $ "/" $ maxProgress $ ")", achievements[index].image);
             break;
         }
     }

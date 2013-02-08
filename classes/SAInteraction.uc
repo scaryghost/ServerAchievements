@@ -50,9 +50,11 @@ function bool KeyEvent(EInputKey Key, EInputAction Action, float Delta ) {
 }
 
 function PostRender(Canvas canvas) {
+    local int i;
     local float TimeElapsed;
     local float DrawHeight;
     local float IconSize, TempX, TempY, TempWidth, TempHeight;
+    local array<string> parts;
 
     TimeElapsed= ViewportOwner.Actor.Level.TimeSeconds - NotificationPhaseStartTime;
     if (NotificationPhase == 0) { //Showing phase
@@ -121,18 +123,22 @@ function PostRender(Canvas canvas) {
 
     canvas.SetPos(TempX, TempY);
     canvas.DrawText(messageQueue[0].header);
+
     // Set up next line
-    canvas.StrLen(messageQueue[0].body, TempWidth, TempHeight);
-    TempY += (TempHeight * 0.8);
-    canvas.SetPos(TempX, TempY);
-    canvas.DrawText(messageQueue[0].body);
+    Split( messageQueue[0].body, ";", parts);
+    for(i= 0; i < parts.Length; i++) {
+        canvas.StrLen(parts[i], TempWidth, TempHeight);
+        TempY += TempHeight;
+        canvas.SetPos(TempX, TempY);
+        canvas.DrawText(parts[i]);
+    }
 }
 
 defaultproperties {
     bActive= true
 
     NotificationWidth= 250.0
-    NotificationHeight= 80
+    NotificationHeight= 70
     NotificationShowTime= 0.3
     NotificationHideTime= 0.5
     NotificationHideDelay= 5.0

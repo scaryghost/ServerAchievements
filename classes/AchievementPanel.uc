@@ -1,4 +1,4 @@
-class AchievementPanel extends MidGamePanel;
+class AchievementPanel extends KFGui.KFTab_MidGameVoiceChat;
 
 var automated GUISectionBackground i_BGStats;
 var automated moComboBox packNames;
@@ -34,7 +34,19 @@ function InternalOnLoadINI(GUIComponent sender, string s) {
     lb_StatSelect.listObj.InitList(packs[0]);
 }
 
+function FillPlayerLists() {
+}
+
 defaultproperties {
+    ch_NoVoiceChat= None
+    ch_NoSpeech= None
+    ch_NoText= None
+    ch_Ban= None
+
+    sb_Specs= None
+    sb_Players= None
+    sb_Options= None
+
     Begin Object Class=moComboBox Name=packComboBox
         bReadOnly=True
         bAlwaysNotify=True
@@ -54,7 +66,7 @@ defaultproperties {
         WinTop=0.054063
         WinLeft=0.012240
         WinWidth=0.981520
-        WinHeight=0.896032
+        WinHeight=0.798982
     End Object
     i_BGStats=GUISectionBackground'ServerAchievements.AchievementPanel.BGStats'
 
@@ -62,7 +74,7 @@ defaultproperties {
         WinTop=0.090760
         WinLeft=0.019240
         WinWidth=0.97
-        WinHeight=0.80
+        WinHeight=0.75
     End Object
     lb_StatSelect=AchievementListBox'ServerAchievements.AchievementPanel.listBox'
 }

@@ -97,7 +97,7 @@ function DrawAchievement(Canvas Canvas, int Index, float X, float Y, float Width
 }
 
 function float AchievementHeight(Canvas c) {
-    return (MenuOwner.ActualHeight() / 6.0) - 1.0;
+    return (MenuOwner.ActualHeight() / 8.0) - 1.0;
 }
 
 defaultproperties {
@@ -110,13 +110,13 @@ defaultproperties {
     ProgressBarHeight=0.225
     NameToDescriptionSpacing=0.125
     ProgressTextSpacing=0.009
-    TextHeight=0.225
+    TextHeight=0.275
 
     ItemBackground=Texture'KF_InterfaceArt_tex.Menu.Thin_border_SlightTransparent'
     ProgressBarBackground=Texture'KF_InterfaceArt_tex.Menu.Innerborder'
     ProgressBarForeground=Texture'InterfaceArt_tex.Menu.progress_bar'
 
-    FontScale=FNS_Medium
+    FontScale=FNS_Small
     GetItemHeight=AchievementList.AchievementHeight
     OnDrawItem=AchievementList.DrawAchievement
 }

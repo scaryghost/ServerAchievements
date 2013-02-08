@@ -1,0 +1,1 @@
+class AchievementPanel extends KFGui.KFTab_MidGameVoiceChat;

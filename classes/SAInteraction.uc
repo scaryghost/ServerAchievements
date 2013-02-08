@@ -6,6 +6,7 @@ struct PopupMessage {
     var Texture image;
 };
 
+var GUI.GUITabItem achievementPanel;
 var array<PopupMessage> messageQueue;
 var float NotificationWidth, NotificationHeight, NotificationPhaseStartTime, NotificationIconSpacing, 
         NotificationShowTime, NotificationHideTime, NotificationHideDelay, NotificationBorderSize;
@@ -27,6 +28,25 @@ function addMessage(string header, string body, Texture image) {
         NotificationPhase= 0;
         bVisible= true;
     }
+}
+
+function bool KeyEvent(EInputKey Key, EInputAction Action, float Delta ) {
+    local string alias;
+    local MidGamePanel panel;
+
+    alias= ViewportOwner.Actor.ConsoleCommand("KEYBINDING"@ViewportOwner.Actor.ConsoleCommand("KEYNAME"@Key));
+    if (Action == IST_Press && alias ~= "showmenu") {
+        ViewportOwner.Actor.ShowMenu();
+        if (KFInvasionLoginMenu(KFGUIController(ViewportOwner.GUIController).ActivePage) != none) {
+            panel= MidGamePanel(KFInvasionLoginMenu(KFGUIController(ViewportOwner.GUIController).ActivePage).c_Main.AddTabItem(achievementPanel));
+            if (panel != none) {
+                panel.ModifiedChatRestriction= KFInvasionLoginMenu(KFGUIController(ViewportOwner.GUIController).ActivePage).UpdateChatRestriction;
+            }
+            KFInvasionLoginMenu(KFGUIController(ViewportOwner.GUIController).ActivePage).c_Main.ActivateTabByName(achievementPanel.Caption, true);
+            log("Add achievement panel"@KFInvasionLoginMenu(KFGUIController(ViewportOwner.GUIController).ActivePage).c_Main.TabStack.Length);
+        }
+    }
+    return false;
 }
 
 function PostRender(Canvas canvas) {
@@ -119,4 +139,6 @@ defaultproperties {
     NotificationBorderSize= 7.0
     NotificationIconSpacing= 10.0
     NotificationBackground=Texture'InterfaceArt_tex.Menu.DownTickBlurry'
+
+    achievementPanel=(ClassName="ServerAchievements.AchievementPanel",Caption="Achievements",Hint="View custom achievement progress")
 }

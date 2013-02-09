@@ -36,14 +36,15 @@ function bool KeyEvent(EInputKey Key, EInputAction Action, float Delta ) {
 
     alias= ViewportOwner.Actor.ConsoleCommand("KEYBINDING"@ViewportOwner.Actor.ConsoleCommand("KEYNAME"@Key));
     if (Action == IST_Press && alias ~= "showmenu") {
-        ViewportOwner.Actor.ShowMenu();
-        if (KFInvasionLoginMenu(KFGUIController(ViewportOwner.GUIController).ActivePage) != none) {
+        if (KFGUIController(ViewportOwner.GUIController).ActivePage == None) {
+            ViewportOwner.Actor.ShowMenu();
+        }
+        if (KFInvasionLoginMenu(KFGUIController(ViewportOwner.GUIController).ActivePage) != none && 
+                KFInvasionLoginMenu(KFGUIController(ViewportOwner.GUIController).ActivePage).c_Main.TabIndex(achievementPanel.caption) == -1) {
             panel= MidGamePanel(KFInvasionLoginMenu(KFGUIController(ViewportOwner.GUIController).ActivePage).c_Main.AddTabItem(achievementPanel));
             if (panel != none) {
                 panel.ModifiedChatRestriction= KFInvasionLoginMenu(KFGUIController(ViewportOwner.GUIController).ActivePage).UpdateChatRestriction;
             }
-            KFInvasionLoginMenu(KFGUIController(ViewportOwner.GUIController).ActivePage).c_Main.ActivateTabByName(achievementPanel.Caption, true);
-            log("Add achievement panel"@KFInvasionLoginMenu(KFGUIController(ViewportOwner.GUIController).ActivePage).c_Main.TabStack.Length);
         }
     }
     return false;

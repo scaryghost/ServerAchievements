@@ -15,9 +15,11 @@ function InternalOnChange(GUIComponent sender) {
     local SAReplicationInfo ownerSAri;
     local array<AchievementPackBase> packs;
 
-    ownerSAri= class'SAReplicationInfo'.static.findSAri(PlayerOwner().PlayerReplicationInfo);
-    ownerSAri.getAchievementPacks(packs);
-    lb_StatSelect.listObj.InitList(packs[packNames.GetIndex()]);
+    if (sender == packNames) {
+        ownerSAri= class'SAReplicationInfo'.static.findSAri(PlayerOwner().PlayerReplicationInfo);
+        ownerSAri.getAchievementPacks(packs);
+        lb_StatSelect.listObj.InitList(packs[packNames.GetIndex()]);
+    }
 }
 
 function InternalOnLoadINI(GUIComponent sender, string s) {
@@ -27,11 +29,14 @@ function InternalOnLoadINI(GUIComponent sender, string s) {
 
     ownerSAri= class'SAReplicationInfo'.static.findSAri(PlayerOwner().PlayerReplicationInfo);
     ownerSAri.getAchievementPacks(packs);
-    packNames.ResetComponent();
-    for(i= 0; i < ownerSAri.achievementPacks.Length; i++) {
-        packNames.AddItem(packs[i].packName);
+    if (sender == packNames && packNames.ItemCount() == 0) {
+        packNames.ResetComponent();
+        for(i= 0; i < ownerSAri.achievementPacks.Length; i++) {
+            packNames.AddItem(packs[i].packName);
+        }
+    } else if (sender == lb_StatSelect) {
+        lb_StatSelect.listObj.InitList(packs[0]);
     }
-    lb_StatSelect.listObj.InitList(packs[0]);
 }
 
 function FillPlayerLists() {

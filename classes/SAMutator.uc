@@ -35,11 +35,20 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
         pri= PlayerReplicationInfo(Other);
         saRI= Spawn(class'SAReplicationInfo', pri.Owner);
         saRI.ownerPRI= pri;
+        saRI.mutRef= Self;
         saRIs[saRIs.Length]= saRI;
-        SetTimer(0.1, false);
+//        SetTimer(0.1, false);
     }
 
     return true;
+}
+
+function sendAch(SAReplicationInfo saRI) {
+    local int j;
+        for(j= 0; j < loadedAchievementPacks.Length; j++) {
+            saRI.addAchievementPack(Spawn(loadedAchievementPacks[j], saRI.Owner));
+        }
+        saRI.numPacks= loadedAchievementPacks.Length;
 }
 
 function Timer() {

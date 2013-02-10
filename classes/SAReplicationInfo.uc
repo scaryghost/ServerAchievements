@@ -1,21 +1,30 @@
 class SAReplicationInfo extends ReplicationInfo;
 
+var SAMutator mutRef;
 var PlayerReplicationInfo ownerPRI;
 var array<AchievementPackBase> achievementPacks;
+var int numPacks;
 
 replication {
-    reliable if (bNetDirty && Role == ROLE_Authority)
-        ownerPRI;
+    reliable if (Role == ROLE_Authority)
+        ownerPRI, numPacks;
 }
 
-simulated function PostNetBeginPlay() {
+simulated function Tick(float DeltaTime) {
     local AchievementPackBase pack;
 
-    foreach DynamicActors(class'AchievementPackBase', pack) {
-        if (pack.Owner == Owner) {
-            addAchievementPack(pack);
-        }
+    super.Tick(DeltaTime);
+
+    if (Role == ROLE_Authority) {
+        mutRef.sendAch(self);
     }
+        foreach DynamicActors(class'AchievementPackBase', pack) {
+            if (pack.Owner == Owner) {
+                addAchievementPack(pack);
+            }
+        }
+    log("I have"@achievementPacks.Length@"I should have"@numPacks);
+    Disable('Tick');
 }
 
 simulated function addAchievementPack(AchievementPackBase pack) {

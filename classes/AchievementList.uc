@@ -1,25 +1,8 @@
-class AchievementList extends GUIVertList;
+class AchievementList extends KFGui.KFAchievementsList;
 
 var AchievementPackBase currentPack;
 
-// Settings
-var()   float   OuterBorder;
-var()   float   ItemBorder;
-var()   float   TextTopOffset;
-var()   float   ItemSpacing;
-var()   float   IconToNameSpacing;
-var()   float   NameToDescriptionSpacing;
-var()   float   ProgressBarWidth;
-var()   float   ProgressBarHeight;
-var()   float   ProgressTextSpacing;
-var()   float   TextHeight;
-
-// Display
-var texture ItemBackground;
-var texture ProgressBarBackground;
-var texture ProgressBarForeground;
-
-function InitList(AchievementPackBase pack) {
+function setAchievementPack(AchievementPackBase pack) {
     SetIndex(0);
     currentPack= pack;
     ItemCount= currentPack.achievements.Length;
@@ -101,22 +84,9 @@ function float AchievementHeight(Canvas c) {
 }
 
 defaultproperties {
-    OuterBorder=0.015
-    ItemBorder=0.05
-    TextTopOffset=0.082
-    ItemSpacing=5.0
-    IconToNameSpacing=0.018
-    ProgressBarWidth=0.227
-    ProgressBarHeight=0.225
-    NameToDescriptionSpacing=0.125
-    ProgressTextSpacing=0.009
     TextHeight=0.275
-
-    ItemBackground=Texture'KF_InterfaceArt_tex.Menu.Thin_border_SlightTransparent'
-    ProgressBarBackground=Texture'KF_InterfaceArt_tex.Menu.Innerborder'
-    ProgressBarForeground=Texture'InterfaceArt_tex.Menu.progress_bar'
-
     FontScale=FNS_Small
+
     GetItemHeight=AchievementList.AchievementHeight
     OnDrawItem=AchievementList.DrawAchievement
 }

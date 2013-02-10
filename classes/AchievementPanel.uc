@@ -1,8 +1,8 @@
 class AchievementPanel extends KFGui.KFTab_MidGameVoiceChat;
 
-var automated GUISectionBackground i_BGStats;
+var automated GUISectionBackground panelBg;
 var automated moComboBox packNames;
-var automated AchievementListBox lb_StatSelect;
+var automated AchievementListBox achvSelect;
 
 function InitComponent(GUIController MyController, GUIComponent MyOwner) {
     packNames.OnChange= InternalOnChange;
@@ -18,7 +18,7 @@ function InternalOnChange(GUIComponent sender) {
     if (sender == packNames) {
         ownerSAri= class'SAReplicationInfo'.static.findSAri(PlayerOwner().PlayerReplicationInfo);
         ownerSAri.getAchievementPacks(packs);
-        lb_StatSelect.listObj.InitList(packs[packNames.GetIndex()]);
+        achvSelect.listObj.setAchievementPack(packs[packNames.GetIndex()]);
     }
 }
 
@@ -34,8 +34,8 @@ function InternalOnLoadINI(GUIComponent sender, string s) {
         for(i= 0; i < ownerSAri.achievementPacks.Length; i++) {
             packNames.AddItem(packs[i].packName);
         }
-    } else if (sender == lb_StatSelect) {
-        lb_StatSelect.listObj.InitList(packs[0]);
+    } else if (sender == achvSelect) {
+        achvSelect.listObj.setAchievementPack(packs[0]);
     }
 }
 
@@ -73,7 +73,7 @@ defaultproperties {
         WinWidth=0.981520
         WinHeight=0.798982
     End Object
-    i_BGStats=GUISectionBackground'ServerAchievements.AchievementPanel.BGStats'
+    panelBg=GUISectionBackground'ServerAchievements.AchievementPanel.BGStats'
 
     Begin Object Class=AchievementListBox Name=listBox
         WinTop=0.090760
@@ -81,5 +81,5 @@ defaultproperties {
         WinWidth=0.97
         WinHeight=0.75
     End Object
-    lb_StatSelect=AchievementListBox'ServerAchievements.AchievementPanel.listBox'
+    achvSelect=AchievementListBox'ServerAchievements.AchievementPanel.listBox'
 }

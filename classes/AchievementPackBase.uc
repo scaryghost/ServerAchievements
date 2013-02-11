@@ -15,7 +15,7 @@ struct Achievement {
 };
 
 var float flushPeriod, flushTimer;
-var PlayerController PCOwner;
+var PlayerController localController;
 var array<Achievement> achievements;
 var bool broadcastedWaveEnd;
 var string packName;
@@ -64,8 +64,7 @@ function Timer() {
 
 simulated event PostNetBeginPlay() {
     if ( Level.NetMode != NM_DedicatedServer) {
-        PCOwner= Level.GetLocalPlayerController();
-        PCOwner.Player.InteractionMaster.AddInteraction("ServerAchievements.SAInteraction", PCOwner.Player);
+        localController= Level.GetLocalPlayerController();
     }
 }
 
@@ -76,9 +75,9 @@ simulated event flushToClient(int index, int progress) {
 simulated event notifyProgress(int index, int progress, int maxProgress) {
     local int i;
 
-    for(i= 0; i < PCOwner.Player.LocalInteractions.Length; i++) {
-        if (SAInteraction(PCOwner.Player.LocalInteractions[i]) != none) {
-            SAInteraction(PCOwner.Player.LocalInteractions[i]).addMessage("Achivement In Progress", 
+    for(i= 0; i < localController.Player.LocalInteractions.Length; i++) {
+        if (SAInteraction(localController.Player.LocalInteractions[i]) != none) {
+            SAInteraction(localController.Player.LocalInteractions[i]).addMessage("Achivement In Progress", 
                 achievements[index].title@";("$ progress $ "/" $ maxProgress $ ")", achievements[index].image);
             break;
         }
@@ -90,9 +89,9 @@ simulated event achievementCompleted(int index) {
 
     if (!achievements[index].completed) {
         achievements[index].completed= true;
-        for(i= 0; i < PCOwner.Player.LocalInteractions.Length; i++) {
-            if (SAInteraction(PCOwner.Player.LocalInteractions[i]) != none) {
-                SAInteraction(PCOwner.Player.LocalInteractions[i]).addMessage("Achivement Unlocked!", 
+        for(i= 0; i < localController.Player.LocalInteractions.Length; i++) {
+            if (SAInteraction(localController.Player.LocalInteractions[i]) != none) {
+                SAInteraction(localController.Player.LocalInteractions[i]).addMessage("Achivement Unlocked!", 
                     achievements[index].title, achievements[index].image);
                 break;
             }

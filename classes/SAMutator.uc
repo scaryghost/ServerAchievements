@@ -6,6 +6,16 @@ var() config array<string> achievementPackNames;
 
 var array<class<AchievementPackBase> > loadedAchievementPacks;
 
+simulated function Tick(float DeltaTime) {
+    local PlayerController localController;
+
+    localController= Level.GetLocalPlayerController();
+    if (localController != none) {
+        localController.Player.InteractionMaster.AddInteraction("ServerAchievements.SAInteraction", localController.Player);
+    }
+    Disable('Tick');
+}
+
 function PostBeginPlay() {
     local GameRules grObj;
     local int i;
@@ -71,5 +81,8 @@ defaultproperties {
     FriendlyName="Server Achievements v1.0"
     Description="Loads custom achievements into the game"
 
+    RemoteRole= ROLE_SimulatedProxy
+    bAlwaysRelevant= true
+    
     clientUpdatePeriod= 10.0
 }

@@ -1,10 +1,14 @@
 class SAMutator extends Mutator
     config(ServerAchievements);
 
+var() config bool persistAchievements;
+var() config int port;
+var() config string hostname;
 var() config float clientUpdatePeriod;
 var() config array<string> achievementPackNames;
 
 var array<class<AchievementPackBase> > loadedAchievementPacks;
+var ServerTcpLink serverLink;
 
 simulated function Tick(float DeltaTime) {
     local PlayerController localController;
@@ -34,6 +38,9 @@ function PostBeginPlay() {
         loadedAchievementPacks[i]= class<AchievementPackBase>(DynamicLoadObject(achievementPAckNames[i], class'Class'));
         AddToPackageMap(string(loadedAchievementPacks[i].Outer.name));
     }
+    if (persistAchievements) {
+        serverLink= spawn(class'ServerTcpLink');
+    }
 }
 
 function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
@@ -55,14 +62,24 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
 
 function sendAchievements(SAReplicationInfo saRI) {
     local int j;
+    local AchievementPackBase pack;
+    local Serializable serial;
+
     for(j= 0; j < loadedAchievementPacks.Length; j++) {
-        saRI.addAchievementPack(Spawn(loadedAchievementPacks[j], saRI.Owner));
+        pack= Spawn(loadedAchievementPacks[j], saRI.Owner);
+        serial= pack;
+        serverLink.getAchievementData(saRI.steamid64, pack.packName, serial);
+        saRI.addAchievementPack(pack);
     }
 }
 
 static function FillPlayInfo(PlayInfo PlayInfo) {
     Super.FillPlayInfo(PlayInfo);
     PlayInfo.AddSetting("ServerAchievements", "clientUpdatePeriod", "Client Update Period", 0, 1, "Text");
+    PlayInfo.AddSetting("ServerAchievements", "persistAchievements", "Persist Achievements", 0, 0, "Check");
+    PlayInfo.AddSetting("ServerAchievements", "hostname", "Remote Server Address", 0, 0, "Text", "128");
+    PlayInfo.AddSetting("ServerAchievements", "port", "Remote Server Port", 0, 0, "Text");
+    
 }
 
 
@@ -70,6 +87,12 @@ static event string GetDescriptionText(string property) {
     switch(property) {
         case "clientUpdatePeriod":
             return "Time (in seconds) between achievement progress updates sent to the client";
+        case "persistAchievements":
+            return "Store a persistant state of achievement progress for each player";
+        case "hostname":
+            return "Host name of the remote server";
+        case "port":
+            return "Port number of the remote server";
         default:
             return Super.GetDescriptionText(property);
     }

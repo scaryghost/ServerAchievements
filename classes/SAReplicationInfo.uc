@@ -1,5 +1,6 @@
 class SAReplicationInfo extends ReplicationInfo;
 
+var string steamid64;
 var SAMutator mutRef;
 var PlayerReplicationInfo ownerPRI;
 var array<AchievementPackBase> achievementPacks;
@@ -14,6 +15,10 @@ simulated function Tick(float DeltaTime) {
 
     super.Tick(DeltaTime);
 
+    if (PlayerController(Owner) != Level.GetLocalPlayerController()) {
+        steamid64= PlayerController(Owner).GetPlayerIDHash();
+    }
+    
     if (Role == ROLE_Authority) {
         mutRef.sendAchievements(self);
     }

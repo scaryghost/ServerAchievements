@@ -11,8 +11,9 @@ var int tcpPort;
 
 function PostBeginPlay() {
     LinkMode= MODE_Line;
-    BindPort(6000, true);
-    Resolve(hostname);
+    tcpPort= class'SAMutator'.default.port;
+    BindPort(tcpPort + 1, true);
+    Resolve(class'SAMutator'.default.hostname);
     header=  protocol $ "-" $ version $ "-request";
 }
 

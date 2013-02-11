@@ -44,7 +44,7 @@ function string serializeUserData() {
         if (i != 0) {
             data$= ";";
         }
-        data$= achievements[i].completed @ achievements[i].progress;
+        data$= achievements[i].completed $ "," $ achievements[i].progress;
     }
     return data;
 }
@@ -55,7 +55,7 @@ function deserializeUserData(string data) {
     
     Split(data, ";", parts);
     for(i= 0; i < parts.Length; i++) {
-        Split(parts[i], " ", achvData);
+        Split(parts[i], ",", achvData);
         achievements[i].completed= bool(achvData[0]);
         achievements[i].progress= int(achvData[1]);
     }

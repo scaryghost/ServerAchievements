@@ -1,4 +1,4 @@
-class AchievementPackBase extends Actor
+class AchievementPackBase extends Serializable
     abstract;
 
 struct Achievement {
@@ -34,6 +34,31 @@ function damagedMonster(int damage, Pawn target, class<DamageType> damageType);
 
 event PostBeginPlay() {
     SetTimer(1.0, true);
+}
+
+function string serializeUserData() {
+    local int i;
+    local string data;
+
+    for(i= 0; i < achievements.Length; i++) {
+        if (i != 0) {
+            data$= ";";
+        }
+        data$= achievements[i].completed @ achievements[i].progress;
+    }
+    return data;
+}
+
+function deserializeUserData(string data) {
+    local array<string> parts, achvData;
+    local int i;
+    
+    Split(data, ";", parts);
+    for(i= 0; i < parts.Length; i++) {
+        Split(parts[i], " ", achvData);
+        achievements[i].completed= bool(achvData[0]);
+        achievements[i].progress= int(achvData[1]);
+    }
 }
 
 function Timer() {

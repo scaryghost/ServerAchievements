@@ -53,12 +53,11 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
     return true;
 }
 
-function sendAch(SAReplicationInfo saRI) {
+function sendAchievements(SAReplicationInfo saRI) {
     local int j;
-        for(j= 0; j < loadedAchievementPacks.Length; j++) {
-            saRI.addAchievementPack(Spawn(loadedAchievementPacks[j], saRI.Owner));
-        }
-        saRI.numPacks= loadedAchievementPacks.Length;
+    for(j= 0; j < loadedAchievementPacks.Length; j++) {
+        saRI.addAchievementPack(Spawn(loadedAchievementPacks[j], saRI.Owner));
+    }
 }
 
 static function FillPlayInfo(PlayInfo PlayInfo) {

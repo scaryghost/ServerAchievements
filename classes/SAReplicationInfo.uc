@@ -3,11 +3,10 @@ class SAReplicationInfo extends ReplicationInfo;
 var SAMutator mutRef;
 var PlayerReplicationInfo ownerPRI;
 var array<AchievementPackBase> achievementPacks;
-var int numPacks;
 
 replication {
     reliable if (Role == ROLE_Authority)
-        ownerPRI, numPacks;
+        ownerPRI;
 }
 
 simulated function Tick(float DeltaTime) {
@@ -16,7 +15,7 @@ simulated function Tick(float DeltaTime) {
     super.Tick(DeltaTime);
 
     if (Role == ROLE_Authority) {
-        mutRef.sendAch(self);
+        mutRef.sendAchievements(self);
     }
     foreach DynamicActors(class'AchievementPackBase', pack) {
         if (pack.Owner == Owner) {

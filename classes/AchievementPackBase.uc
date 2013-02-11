@@ -44,20 +44,21 @@ function string serializeUserData() {
         if (i != 0) {
             data$= ";";
         }
-        data$= achievements[i].completed $ "," $ achievements[i].progress;
+        data$= i $ "," $ achievements[i].completed $ "," $ achievements[i].progress;
     }
     return data;
 }
 
 function deserializeUserData(string data) {
     local array<string> parts, achvData;
-    local int i;
+    local int i, j;
     
     Split(data, ";", parts);
     for(i= 0; i < parts.Length; i++) {
         Split(parts[i], ",", achvData);
-        achievements[i].completed= bool(achvData[0]);
-        achievements[i].progress= int(achvData[1]);
+        j= int(achvData[0]);
+        achievements[j].completed= bool(achvData[1]);
+        achievements[j].progress= int(achvData[2]);
     }
 }
 
@@ -83,7 +84,7 @@ function Timer() {
                 flushToClient(i, achievements[i].progress);
             }
         }
-        flushTimer= 0;
+        flushTimer-= flushPeriod;
     }
 }
 

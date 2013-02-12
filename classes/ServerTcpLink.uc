@@ -11,6 +11,7 @@ var string hostname;
 function PostBeginPlay() {
     LinkMode= MODE_Line;
     ReceiveMode= RMODE_Manual;
+    BindPort();
     Resolve(class'SAMutator'.default.hostname);
     header=  protocol $ "-" $ version $ "-request";
 }

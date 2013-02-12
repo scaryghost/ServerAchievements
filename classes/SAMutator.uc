@@ -73,6 +73,20 @@ function sendAchievements(SAReplicationInfo saRI) {
     }
 }
 
+function NotifyLogout(Controller Exiting) {
+    local SAReplicationInfo saRI;
+    local array<AchievementPackBase> packs;
+    local int i;
+
+    saRI= class'SAReplicationInfo'.static.findSAri(Exiting.PlayerReplicationInfo);
+    if (persistAchievements) {
+        saRI.getAchievementPacks(packs);
+        for(i= 0; i < packs.Length; i++) {
+            serverLink.saveAchievementData(saRI.steamid64, packs[i].packName, packs[i]);
+        }
+    }
+}
+
 static function FillPlayInfo(PlayInfo PlayInfo) {
     Super.FillPlayInfo(PlayInfo);
     PlayInfo.AddSetting("ServerAchievements", "clientUpdatePeriod", "Client Update Period", 0, 1, "Text");

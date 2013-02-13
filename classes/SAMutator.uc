@@ -67,8 +67,10 @@ function sendAchievements(SAReplicationInfo saRI) {
 
     for(j= 0; j < loadedAchievementPacks.Length; j++) {
         pack= Spawn(loadedAchievementPacks[j], saRI.Owner);
-        serial= pack;
-        serverLink.getAchievementData(saRI.steamid64, pack.packName, serial);
+        if (persistAchievements) {
+            serial= pack;
+            serverLink.getAchievementData(saRI.steamid64, pack.packName, serial);
+        }
         saRI.addAchievementPack(pack);
     }
 }

@@ -21,8 +21,8 @@ var bool broadcastedWaveEnd;
 var string packName;
 
 replication {
-    unreliable if (Role == ROLE_AUTHORITY) 
-        achievementCompleted, notifyProgress, flushToClient;
+    reliable if (Role == ROLE_AUTHORITY) 
+        localAchievementCompleted, notifyProgress, flushToClient;
 }
 
 function matchEnd(string mapname, float difficulty, int length, byte result);
@@ -80,9 +80,7 @@ function Timer() {
     flushTimer+= 1.0;
     if (flushTimer > flushPeriod) {
         for(i= 0; i < achievements.Length; i++) {
-            if (achievements[i].notifyProgress != 0) {
-                flushToClient(i, achievements[i].progress);
-            }
+            flushToClient(i, achievements[i].progress, achievements[i].completed);
         }
         flushTimer-= flushPeriod;
     }
@@ -94,11 +92,12 @@ simulated event PostNetBeginPlay() {
     }
 }
 
-simulated event flushToClient(int index, int progress) {
+simulated function flushToClient(int index, int progress, bool completed) {
     achievements[index].progress= progress;
+    achievements[index].completed= completed;
 }
 
-simulated event notifyProgress(int index, int progress, int maxProgress) {
+simulated function notifyProgress(int index, int progress, int maxProgress) {
     local int i;
 
     for(i= 0; i < localController.Player.LocalInteractions.Length; i++) {
@@ -110,17 +109,22 @@ simulated event notifyProgress(int index, int progress, int maxProgress) {
     }
 }
 
-simulated event achievementCompleted(int index) {
-    local int i;
-
+function achievementCompleted(int index) {
     if (!achievements[index].completed) {
         achievements[index].completed= true;
-        for(i= 0; i < localController.Player.LocalInteractions.Length; i++) {
-            if (SAInteraction(localController.Player.LocalInteractions[i]) != none) {
-                SAInteraction(localController.Player.LocalInteractions[i]).addMessage("Achivement Unlocked!", 
-                    achievements[index].title, achievements[index].image);
-                break;
-            }
+        localAchievementCompleted(index);
+    }
+}
+
+simulated function localAchievementCompleted(int index) {
+    local int i;
+
+    achievements[index].completed= true;
+    for(i= 0; i < localController.Player.LocalInteractions.Length; i++) {
+        if (SAInteraction(localController.Player.LocalInteractions[i]) != none) {
+            SAInteraction(localController.Player.LocalInteractions[i]).addMessage("Achivement Unlocked!", 
+                achievements[index].title, achievements[index].image);
+            break;
         }
     }
 }

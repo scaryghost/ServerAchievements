@@ -41,7 +41,7 @@ function DrawAchievement(Canvas Canvas, int Index, float X, float Y, float Width
 
     // Draw Icon
     Canvas.SetPos(TempX, TempY);
-    if ( currentPack.achievements[Index].completed) {
+    if (currentPack.achievements[Index].completed == 1) {
         Canvas.DrawTile(currentPack.achievements[Index].image, IconSize, IconSize, 0, 0, 64, 64);
     }
     else {

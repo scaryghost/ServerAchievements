@@ -6,7 +6,7 @@ struct Achievement {
     var string description;
     var Texture image;
 
-    var bool completed;
+    var byte completed;
     var int progress;
     var int maxProgress;
     var int notifyProgress;
@@ -57,7 +57,7 @@ function deserializeUserData(string data) {
     for(i= 0; i < parts.Length; i++) {
         Split(parts[i], ",", achvData);
         j= int(achvData[0]);
-        achievements[j].completed= bool(achvData[1]);
+        achievements[j].completed= byte(achvData[1]);
         achievements[j].progress= int(achvData[2]);
     }
 }
@@ -92,7 +92,7 @@ simulated event PostNetBeginPlay() {
     }
 }
 
-simulated function flushToClient(int index, int progress, bool completed) {
+simulated function flushToClient(int index, int progress, byte completed) {
     achievements[index].progress= progress;
     achievements[index].completed= completed;
 }
@@ -110,8 +110,8 @@ simulated function notifyProgress(int index, int progress, int maxProgress) {
 }
 
 function achievementCompleted(int index) {
-    if (!achievements[index].completed) {
-        achievements[index].completed= true;
+    if (achievements[index].completed == 0) {
+        achievements[index].completed= 1;
         localAchievementCompleted(index);
     }
 }
@@ -119,7 +119,7 @@ function achievementCompleted(int index) {
 simulated function localAchievementCompleted(int index) {
     local int i;
 
-    achievements[index].completed= true;
+    achievements[index].completed= 1;
     for(i= 0; i < localController.Player.LocalInteractions.Length; i++) {
         if (SAInteraction(localController.Player.LocalInteractions[i]) != none) {
             SAInteraction(localController.Player.LocalInteractions[i]).addMessage("Achivement Unlocked!", 

@@ -57,7 +57,7 @@ function DrawAchievement(Canvas Canvas, int Index, float X, float Y, float Width
     //Draw the Description
     SectionStyle.DrawText(Canvas, MSAT_Blurry, TempX, TempY + (TextHeight * Height) + (NameToDescriptionSpacing * Height), Width - TempX, TextHeight * Height, TXTA_Left, currentPack.achievements[Index].description, FNS_Small);
 
-    if ( currentPack.achievements[Index].notifyProgress != 0) {
+    if ( currentPack.achievements[Index].maxProgress != 0) {
         TempX = X + Width - (OuterBorder * Width) - (ItemBorder * Height * 2.0) - (ProgressBarWidth * Width);
         TempY = Y + (Height / 2.0) - (ProgressBarHeight * Height / 2.0);
 

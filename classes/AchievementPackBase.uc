@@ -2,14 +2,17 @@ class AchievementPackBase extends Serializable
     abstract;
 
 struct Achievement {
+/** Static values that will always be the same for each player */
     var string title;
     var string description;
     var Texture image;
+    var int maxProgress;
 
+/** Player data that is saved and restored */
     var byte completed;
     var int progress;
-    var int maxProgress;
-    var int notifyProgress;
+
+/** Transient states that do not need to be saved */
     var byte timesNotified;
     var byte canEarn;
 };
@@ -59,6 +62,7 @@ function deserializeUserData(string data) {
         j= int(achvData[0]);
         achievements[j].completed= byte(achvData[1]);
         achievements[j].progress= int(achvData[2]);
+        flushToClient(j, achievements[j].progress, achievements[j].completed);
     }
 }
 
@@ -80,14 +84,16 @@ function Timer() {
     flushTimer+= 1.0;
     if (flushTimer > flushPeriod) {
         for(i= 0; i < achievements.Length; i++) {
-            flushToClient(i, achievements[i].progress, achievements[i].completed);
+            if (achievements[i].progress < achievements[i].maxProgress) {
+                flushToClient(i, achievements[i].progress, achievements[i].completed);
+            }
         }
         flushTimer-= flushPeriod;
     }
 }
 
 simulated event PostNetBeginPlay() {
-    if ( Level.NetMode != NM_DedicatedServer) {
+    if (Level.NetMode != NM_DedicatedServer) {
         localController= Level.GetLocalPlayerController();
     }
 }

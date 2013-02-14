@@ -21,20 +21,19 @@ event Resolved(IpAddr addr) {
     serverAddr.port= class'SAMutator'.default.port;
 
     if (!Open(serverAddr)) {
-        log("Cannot reach remote host");
+        log("Cannot reach remote host"@IpAddrToString(serverAddr));
     }
 }
 
 event Opened() {
-    local string request, response;
-    local int i;
+    local string response;
+    local int len;
     local array<string> parts;
 
-    request= header $ separator $ "connect" $ separator $ "password";
-    SendText(request);
+    SendText(header $ separator $ "connect" $ separator $ "password");
     do {
-        i= ReadText(response);
-    } until (i != 0);
+        len= ReadText(response);
+    } until (len != 0);
     Split(response, separator, parts);
     if (int(parts[1]) != 0) {
         /** TODO: Handle non zero status */
@@ -43,34 +42,36 @@ event Opened() {
 }
 
 function getAchievementData(string steamid64, string packName, out Serializable obj) {
-    local int i;
-    local string request, response;
+    local int len;
+    local string response;
     local array<string> parts;
 
-    request= header $ separator $ "retrieve" $ separator $ steamid64 $ "," $ packName;
-    SendText(request);
-    do {
-        i= ReadText(response);
-    } until (i != 0);
-    Split(response, separator, parts);
+    if (IsConnected()) {
+        SendText(header $ separator $ "retrieve" $ separator $ steamid64 $ "," $ packName);
+        do {
+            len= ReadText(response);
+        } until (len != 0);
+        Split(response, separator, parts);
 
-    /** TODO: check header and version */
-    obj.deserializeUserData(parts[2]);
+        /** TODO: check header and version */
+        obj.deserializeUserData(parts[2]);
+    }
 }
 
 function saveAchievementData(string steamid64, string packName, Serializable obj) {
-    local int i;
-    local string request, response;
+    local int len;
+    local string response;
     local array<string> parts;
 
-    request= header $ separator $ "save" $ separator $ steamid64 $ "," $ packName $ "," $ obj.serializeUserData();
-    SendText(request);
-    do {
-        i= ReadText(response);
-    } until (i != 0);
-    Split(response, separator, parts);
+    if (IsConnected()) {
+        SendText(header $ separator $ "save" $ separator $ steamid64 $ "," $ packName $ "," $ obj.serializeUserData());
+        do {
+            len= ReadText(response);
+        } until (len != 0);
+        Split(response, separator, parts);
 
-    /** TODO: check header and version */
+        /** TODO: check header and version */
+    }
 }
 
 

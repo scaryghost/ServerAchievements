@@ -33,7 +33,7 @@ function waveStart(int waveNum);
 function waveEnd(int waveNum);
 function playerDied(Controller killer, class<DamageType> damageType);
 function killedMonster(Pawn target, class<DamageType> damageType);
-function damagedMonster(int damage, Pawn target, class<DamageType> damageType);
+function damagedMonster(int damage, Pawn target, class<DamageType> damageType, bool headshot);
 
 event PostBeginPlay() {
     SetTimer(1.0, true);

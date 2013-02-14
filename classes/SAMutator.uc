@@ -9,6 +9,7 @@ var() config array<string> achievementPackNames;
 
 var array<class<AchievementPackBase> > loadedAchievementPacks;
 var ServerTcpLink serverLink;
+var SAGameRules grObj;
 
 simulated function Tick(float DeltaTime) {
     local PlayerController localController;
@@ -21,7 +22,6 @@ simulated function Tick(float DeltaTime) {
 }
 
 function PostBeginPlay() {
-    local GameRules grObj;
     local int i;
 
     if (KFGameType(Level.Game) == none) {
@@ -55,6 +55,11 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
         saRI.mutRef= Self;
     } else if (AchievementPackBase(Other) != none) {
         AchievementPackBase(Other).flushPeriod= clientUpdatePeriod;
+    } else if (KFMonster(Other) != none) {
+        grObj.aliveMonsters.Length= grObj.aliveMonsters.Length + 1;
+        grObj.aliveMonsters[grObj.aliveMonsters.Length - 1].monster= KFMonster(Other);
+        grObj.aliveMonsters[grObj.aliveMonsters.Length - 1].prevHeadHealth= KFMonster(Other).default.HeadHealth * 
+            KFMonster(Other).DifficultyHeadHealthModifer() * KFMonster(Other).NumPlayersHeadHealthModifer();
     }
 
     return true;

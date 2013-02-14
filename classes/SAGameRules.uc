@@ -1,7 +1,11 @@
 class SAGameRules extends GameRules;
 
-var array<KFMonster> dmgMonsters;
-var array<float> prevHeadHealth;
+struct HeadHealthState {
+    var KFMonster monster;
+    var float prevHeadHealth;
+};
+
+var array<HeadHealthState> aliveMonsters;
 
 function int NetDamage(int OriginalDamage, int Damage, pawn injured, pawn instigatedBy, 
         vector HitLocation, out vector Momentum, class<DamageType> DamageType) {
@@ -10,20 +14,14 @@ function int NetDamage(int OriginalDamage, int Damage, pawn injured, pawn instig
     local SAReplicationInfo instigatorSAri;
     local array<AchievementPackBase> achievementPacks;
 
-    for(i= 0; i < dmgMonsters.Length; i++) {
-        if (dmgMonsters[i] == injured) {
-            if(prevHeadHealth[i] > KFMonster(injured).HeadHealth) {
-                prevHeadHealth[i]= KFMonster(injured).HeadHealth;
+    for(i= 0; i < aliveMonsters.Length; i++) {
+        if (aliveMonsters[i].monster == injured) {
+            if (aliveMonsters[i].prevHeadHealth > KFMonster(injured).HeadHealth) {
+                aliveMonsters[i].prevHeadHealth= KFMonster(injured).HeadHealth;
                 headshot= true;
             }
             break;
         }
-    }
-    if (i == dmgMonsters.Length && KFMonster(injured).HeadHealth < KFMonster(injured).default.HeadHealth * 
-            KFMonster(injured).DifficultyHeadHealthModifer() * KFMonster(injured).NumPlayersHeadHealthModifer()) {
-        dmgMonsters[dmgMonsters.Length]= KFMonster(injured);
-        prevHeadHealth[prevHeadHealth.Length]= KFMonster(injured).HeadHealth;
-        headshot= true;
     }
     newDamage= super.NetDamage(OriginalDamage, Damage, injured, instigatedBy, HitLocation, Momentum, DamageType);
 
@@ -52,10 +50,9 @@ function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> dam
                     achievementPacks[i].killedMonster(Killed, DamageType);
                 }
             }
-            for(i= 0; i < dmgMonsters.Length; i++) {
-                if (dmgMonsters[i] == Killed) {
-                    dmgMonsters.remove(i, 1);
-                    prevHeadHealth.remove(i, 1);
+            for(i= 0; i < aliveMonsters.Length; i++) {
+                if (aliveMonsters[i].monster == Killed) {
+                    aliveMonsters.remove(i, 1);
                     break;
                 }
             }

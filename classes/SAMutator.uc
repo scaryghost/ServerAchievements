@@ -4,7 +4,6 @@ class SAMutator extends Mutator
 var() config bool persistAchievements;
 var() config int port;
 var() config string hostname;
-var() config float clientUpdatePeriod;
 var() config array<string> achievementPackNames;
 
 var array<class<AchievementPackBase> > loadedAchievementPacks;
@@ -53,8 +52,6 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
         saRI= Spawn(class'SAReplicationInfo', pri.Owner);
         saRI.ownerPRI= pri;
         saRI.mutRef= Self;
-    } else if (AchievementPackBase(Other) != none) {
-        AchievementPackBase(Other).flushPeriod= clientUpdatePeriod;
     } else if (KFMonster(Other) != none) {
         grObj.aliveMonsters.Length= grObj.aliveMonsters.Length + 1;
         grObj.aliveMonsters[grObj.aliveMonsters.Length - 1].monster= KFMonster(Other);
@@ -96,7 +93,6 @@ function NotifyLogout(Controller Exiting) {
 
 static function FillPlayInfo(PlayInfo PlayInfo) {
     Super.FillPlayInfo(PlayInfo);
-    PlayInfo.AddSetting("ServerAchievements", "clientUpdatePeriod", "Client Update Period", 0, 1, "Text");
     PlayInfo.AddSetting("ServerAchievements", "persistAchievements", "Persist Achievements", 0, 0, "Check");
     PlayInfo.AddSetting("ServerAchievements", "hostname", "Remote Server Address", 0, 0, "Text", "128");
     PlayInfo.AddSetting("ServerAchievements", "port", "Remote Server Port", 0, 0, "Text");
@@ -106,8 +102,6 @@ static function FillPlayInfo(PlayInfo PlayInfo) {
 
 static event string GetDescriptionText(string property) {
     switch(property) {
-        case "clientUpdatePeriod":
-            return "Time (in seconds) between achievement progress updates sent to the client";
         case "persistAchievements":
             return "Store a persistant state of achievement progress for each player";
         case "hostname":
@@ -126,6 +120,4 @@ defaultproperties {
 
     RemoteRole= ROLE_SimulatedProxy
     bAlwaysRelevant= true
-    
-    clientUpdatePeriod= 10.0
 }

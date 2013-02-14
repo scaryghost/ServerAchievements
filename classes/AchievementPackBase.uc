@@ -7,6 +7,7 @@ struct Achievement {
     var string description;
     var Texture image;
     var int maxProgress;
+    var float notifyIncrement;
 
 /** Player data that is saved and restored */
     var byte completed;
@@ -17,11 +18,11 @@ struct Achievement {
     var byte canEarn;
 };
 
-var float flushPeriod, flushTimer;
 var PlayerController localController;
 var array<Achievement> achievements;
 var bool broadcastedWaveEnd;
 var string packName;
+var bool dataModified;
 
 replication {
     reliable if (Role == ROLE_AUTHORITY) 
@@ -67,8 +68,6 @@ function deserializeUserData(string data) {
 }
 
 function Timer() {
-    local int i;
-
     if (!broadcastedWaveEnd && KFGameType(Level.Game) != none && !KFGameType(Level.Game).bWaveInProgress) {
         waveEnd(KFGameType(Level.Game).WaveNum);
         broadcastedWaveEnd= true;
@@ -80,15 +79,6 @@ function Timer() {
         matchEnd(class'KFGameType'.static.GetCurrentMapName(Level), Level.Game.GameDifficulty, 
             KFGameType(Level.Game).KFGameLength, KFGameReplicationInfo(Level.Game.GameReplicationInfo).EndGameType);
         SetTimer(0, false);
-    }
-    flushTimer+= 1.0;
-    if (flushTimer > flushPeriod) {
-        for(i= 0; i < achievements.Length; i++) {
-            if (achievements[i].progress < achievements[i].maxProgress) {
-                flushToClient(i, achievements[i].progress, achievements[i].completed);
-            }
-        }
-        flushTimer-= flushPeriod;
     }
 }
 
@@ -103,13 +93,13 @@ simulated function flushToClient(int index, int progress, byte completed) {
     achievements[index].completed= completed;
 }
 
-simulated function notifyProgress(int index, int progress, int maxProgress) {
+simulated function notifyProgress(int index) {
     local int i;
 
     for(i= 0; i < localController.Player.LocalInteractions.Length; i++) {
         if (SAInteraction(localController.Player.LocalInteractions[i]) != none) {
             SAInteraction(localController.Player.LocalInteractions[i]).addMessage("Achivement In Progress", 
-                achievements[index].title@";("$ progress $ "/" $ maxProgress $ ")", achievements[index].image);
+                achievements[index].title@";("$ achievements[index].progress $ "/" $ achievements[index].maxProgress $ ")", achievements[index].image);
             break;
         }
     }
@@ -118,14 +108,29 @@ simulated function notifyProgress(int index, int progress, int maxProgress) {
 function achievementCompleted(int index) {
     if (achievements[index].completed == 0) {
         achievements[index].completed= 1;
+        flushToClient(index, achievements[index].progress, achievements[index].completed);
+        dataModified= true;
         localAchievementCompleted(index);
     }
+}
+
+function addProgress(int index, int offset) {
+    achievements[index].progress+= offset;
+    if (achievements[index].progress >= achievements[index].maxProgress) {
+        achievementCompleted(index);
+    } else {
+        flushToClient(index, achievements[index].progress, achievements[index].completed);
+        if (achievements[index].progress >= achievements[index].notifyIncrement * (achievements[index].timesNotified + 1) * achievements[index].maxProgress) {
+            notifyProgress(index);
+            achievements[index].timesNotified++;
+        }
+    }
+    dataModified= true;
 }
 
 simulated function localAchievementCompleted(int index) {
     local int i;
 
-    achievements[index].completed= 1;
     for(i= 0; i < localController.Player.LocalInteractions.Length; i++) {
         if (SAInteraction(localController.Player.LocalInteractions[i]) != none) {
             SAInteraction(localController.Player.LocalInteractions[i]).addMessage("Achivement Unlocked!", 
@@ -147,6 +152,5 @@ defaultproperties {
     bHidden=true
 
     broadcastedWaveEnd= true
-    flushPeriod= 10.0
 }
 

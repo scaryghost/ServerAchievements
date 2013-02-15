@@ -6,7 +6,7 @@ var() config int port;
 var() config string hostname;
 var() config array<string> achievementPackNames;
 
-var array<class<AchievementPackBase> > loadedAchievementPacks;
+var array<class<AchievementPack> > loadedAchievementPacks;
 var ServerTcpLink serverLink;
 var SAGameRules grObj;
 
@@ -34,7 +34,7 @@ function PostBeginPlay() {
     Level.Game.GameRulesModifiers= grObj;
 
     for(i= 0; i < achievementPackNames.Length; i++) {
-        loadedAchievementPacks[i]= class<AchievementPackBase>(DynamicLoadObject(achievementPAckNames[i], class'Class'));
+        loadedAchievementPacks[i]= class<AchievementPack>(DynamicLoadObject(achievementPAckNames[i], class'Class'));
         AddToPackageMap(string(loadedAchievementPacks[i].Outer.name));
     }
     if (persistAchievements) {
@@ -69,7 +69,7 @@ function sendAchievements(SAReplicationInfo saRI) {
     for(j= 0; j < loadedAchievementPacks.Length; j++) {
         pack= Spawn(loadedAchievementPacks[j], saRI.Owner);
         if (persistAchievements) {
-            serverLink.getAchievementData(saRI.steamid64, pack.packName, pack);
+            serverLink.getAchievementData(saRI.steamid64, pack.getPackName(), pack);
         }
         saRI.addAchievementPack(pack);
     }
@@ -77,14 +77,14 @@ function sendAchievements(SAReplicationInfo saRI) {
 
 function NotifyLogout(Controller Exiting) {
     local SAReplicationInfo saRI;
-    local array<AchievementPackBase> packs;
+    local array<AchievementPack> packs;
     local int i;
 
     saRI= class'SAReplicationInfo'.static.findSAri(Exiting.PlayerReplicationInfo);
     if (persistAchievements) {
         saRI.getAchievementPacks(packs);
         for(i= 0; i < packs.Length; i++) {
-            serverLink.saveAchievementData(saRI.steamid64, packs[i].packName, packs[i]);
+            serverLink.saveAchievementData(saRI.steamid64, packs[i].getPackName(), packs[i]);
         }
     }
 }

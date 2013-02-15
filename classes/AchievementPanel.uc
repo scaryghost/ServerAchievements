@@ -13,7 +13,7 @@ function InitComponent(GUIController MyController, GUIComponent MyOwner) {
 
 function InternalOnChange(GUIComponent sender) {
     local SAReplicationInfo ownerSAri;
-    local array<AchievementPackBase> packs;
+    local array<AchievementPack> packs;
 
     if (sender == packNames) {
         ownerSAri= class'SAReplicationInfo'.static.findSAri(PlayerOwner().PlayerReplicationInfo);
@@ -25,14 +25,14 @@ function InternalOnChange(GUIComponent sender) {
 function InternalOnLoadINI(GUIComponent sender, string s) {
     local int i;
     local SAReplicationInfo ownerSAri;
-    local array<AchievementPackBase> packs;
+    local array<AchievementPack> packs;
 
     ownerSAri= class'SAReplicationInfo'.static.findSAri(PlayerOwner().PlayerReplicationInfo);
     ownerSAri.getAchievementPacks(packs);
     if (sender == packNames && packNames.ItemCount() == 0) {
         packNames.ResetComponent();
         for(i= 0; i < ownerSAri.achievementPacks.Length; i++) {
-            packNames.AddItem(packs[i].packName);
+            packNames.AddItem(packs[i].getPackName());
         }
     } else if (sender == achvSelect) {
         achvSelect.listObj.setAchievementPack(packs[0]);

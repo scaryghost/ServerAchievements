@@ -1,19 +1,15 @@
-class AchievementPackBase extends AchievementPack
+class AchievementPackPartImpl extends AchievementPack
     abstract;
 
 struct Achievement {
-/** Static values that will always be the same for each player */
     var string title;
     var string description;
     var Texture image;
     var int maxProgress;
-    var float notifyIncrement;
-
-/** Player data that is saved and restored */
-    var byte completed;
     var int progress;
+    var byte completed;
 
-/** Transient states that do not need to be saved */
+    var float notifyIncrement;
     var byte timesNotified;
     var byte canEarn;
 };
@@ -22,6 +18,7 @@ var PlayerController localController;
 var array<Achievement> achievements;
 var bool broadcastedWaveEnd;
 var bool dataModified;
+var string packName;
 
 replication {
     reliable if (Role == ROLE_AUTHORITY) 
@@ -57,6 +54,24 @@ function deserializeUserData(string data) {
         achievements[j].progress= int(achvData[2]);
         flushToClient(j, achievements[j].progress, achievements[j].completed);
     }
+}
+
+simulated function fillAchievementInfo(int index, out string title, out string description, out Texture image, 
+    out int maxProgress, out int progress, out byte completed) {
+    title= achievements[index].title;
+    description= achievements[index].description;
+    image= achievements[index].image;
+    maxProgress= achievements[index].maxProgress;
+    progress= achievements[index].progress;
+    completed= achievements[index].completed;
+}
+
+simulated function int numAchievements() {
+    return achievements.Length;
+}
+
+simulated function string getPackName() {
+    return packName;
 }
 
 function Timer() {

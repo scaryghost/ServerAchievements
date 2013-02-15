@@ -12,7 +12,7 @@ function int NetDamage(int OriginalDamage, int Damage, pawn injured, pawn instig
     local int newDamage, i;
     local bool headshot;
     local SAReplicationInfo instigatorSAri;
-    local array<AchievementPackBase> achievementPacks;
+    local array<AchievementPack> achievementPacks;
 
     for(i= 0; i < aliveMonsters.Length; i++) {
         if (aliveMonsters[i].monster == injured) {
@@ -39,7 +39,7 @@ function int NetDamage(int OriginalDamage, int Damage, pawn injured, pawn instig
 function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> damageType, vector HitLocation) {
     local int i;
     local SAReplicationInfo playerSAri;
-    local array<AchievementPackBase> achievementPacks;
+    local array<AchievementPack> achievementPacks;
 
     if (!super.PreventDeath(Killed, Killer, damageType, HitLocation)) {
         if (KFPlayerController(Killer) != none) {

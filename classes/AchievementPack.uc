@@ -1,8 +1,6 @@
 class AchievementPack extends Actor
     abstract;
 
-var string packName;
-
 event matchEnd(string mapname, float difficulty, int length, byte result);
 event waveStart(int waveNum);
 event waveEnd(int waveNum);
@@ -12,6 +10,10 @@ event damagedMonster(int damage, Pawn target, class<DamageType> damageType, bool
 
 function string serializeUserData();
 function deserializeUserData(string data);
+simulated function fillAchievementInfo(int index, out string title, out string description, out Texture image, 
+    out int maxProgress, out int progress, out byte completed);
+simulated function int numAchievements();
+simulated function string getPackName();
 
 defaultproperties {
     RemoteRole=ROLE_SimulatedProxy

@@ -41,7 +41,7 @@ event Opened() {
     }
 }
 
-function getAchievementData(string steamid64, string packName, out Serializable obj) {
+function getAchievementData(string steamid64, string packName, out AchievementPack obj) {
     local int len;
     local string response;
     local array<string> parts;
@@ -58,7 +58,7 @@ function getAchievementData(string steamid64, string packName, out Serializable 
     }
 }
 
-function saveAchievementData(string steamid64, string packName, Serializable obj) {
+function saveAchievementData(string steamid64, string packName, AchievementPack obj) {
     local int len;
     local string response;
     local array<string> parts;

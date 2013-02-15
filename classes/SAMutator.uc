@@ -64,14 +64,12 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
 
 function sendAchievements(SAReplicationInfo saRI) {
     local int j;
-    local AchievementPackBase pack;
-    local Serializable serial;
+    local AchievementPack pack;
 
     for(j= 0; j < loadedAchievementPacks.Length; j++) {
         pack= Spawn(loadedAchievementPacks[j], saRI.Owner);
         if (persistAchievements) {
-            serial= pack;
-            serverLink.getAchievementData(saRI.steamid64, pack.packName, serial);
+            serverLink.getAchievementData(saRI.steamid64, pack.packName, pack);
         }
         saRI.addAchievementPack(pack);
     }

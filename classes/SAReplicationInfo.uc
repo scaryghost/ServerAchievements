@@ -3,7 +3,7 @@ class SAReplicationInfo extends ReplicationInfo;
 var string steamid64;
 var SAMutator mutRef;
 var PlayerReplicationInfo ownerPRI;
-var array<AchievementPackBase> achievementPacks;
+var array<AchievementPack> achievementPacks;
 
 replication {
     reliable if (Role == ROLE_Authority)
@@ -11,7 +11,7 @@ replication {
 }
 
 simulated function Tick(float DeltaTime) {
-    local AchievementPackBase pack;
+    local AchievementPack pack;
 
     super.Tick(DeltaTime);
 
@@ -22,7 +22,7 @@ simulated function Tick(float DeltaTime) {
     if (Role == ROLE_Authority) {
         mutRef.sendAchievements(self);
     }
-    foreach DynamicActors(class'AchievementPackBase', pack) {
+    foreach DynamicActors(class'AchievementPack', pack) {
         if (pack.Owner == Owner) {
             addAchievementPack(pack);
         }
@@ -30,7 +30,7 @@ simulated function Tick(float DeltaTime) {
     Disable('Tick');
 }
 
-simulated function addAchievementPack(AchievementPackBase pack) {
+simulated function addAchievementPack(AchievementPack pack) {
     local int i;
     
     for(i= 0; i < achievementPacks.Length; i++) {
@@ -40,7 +40,7 @@ simulated function addAchievementPack(AchievementPackBase pack) {
     achievementPacks[achievementPacks.Length]= pack;
 }
 
-simulated function removeAchievementPack(AchievementPackBase pack) {
+simulated function removeAchievementPack(AchievementPack pack) {
     local int i;
 
     for(i= 0; i < achievementPacks.Length; i++) {
@@ -51,7 +51,7 @@ simulated function removeAchievementPack(AchievementPackBase pack) {
     }
 }
 
-simulated function getAchievementPacks(out array<AchievementPackBase> packs) {
+simulated function getAchievementPacks(out array<AchievementPack> packs) {
     local int i;
     for(i= 0; i < achievementPacks.Length; i++) {
         packs[i]= achievementPacks[i];

@@ -1,4 +1,4 @@
-class AchievementPackBase extends Serializable
+class AchievementPackBase extends AchievementPack
     abstract;
 
 struct Achievement {
@@ -21,20 +21,12 @@ struct Achievement {
 var PlayerController localController;
 var array<Achievement> achievements;
 var bool broadcastedWaveEnd;
-var string packName;
 var bool dataModified;
 
 replication {
     reliable if (Role == ROLE_AUTHORITY) 
         localAchievementCompleted, notifyProgress, flushToClient;
 }
-
-function matchEnd(string mapname, float difficulty, int length, byte result);
-function waveStart(int waveNum);
-function waveEnd(int waveNum);
-function playerDied(Controller killer, class<DamageType> damageType);
-function killedMonster(Pawn target, class<DamageType> damageType);
-function damagedMonster(int damage, Pawn target, class<DamageType> damageType, bool headshot);
 
 event PostBeginPlay() {
     SetTimer(1.0, true);
@@ -141,16 +133,6 @@ simulated function localAchievementCompleted(int index) {
 }
 
 defaultproperties {
-    RemoteRole=ROLE_SimulatedProxy
-    bAlwaysRelevant=false
-    bOnlyRelevantToOwner=true
-    bOnlyDirtyReplication=true
-    bSkipActorPropertyReplication=true
-
-    bStatic=false
-    bNoDelete=false
-    bHidden=true
-
     broadcastedWaveEnd= true
 }
 

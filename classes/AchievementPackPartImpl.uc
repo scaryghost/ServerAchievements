@@ -141,7 +141,7 @@ simulated function localAchievementCompleted(int index) {
     for(i= 0; i < localController.Player.LocalInteractions.Length; i++) {
         if (SAInteraction(localController.Player.LocalInteractions[i]) != none) {
             SAInteraction(localController.Player.LocalInteractions[i]).addMessage("Achivement Unlocked!", 
-                achievements[index].title, achievements[index].image);
+                packName $ ";" $ achievements[index].title, achievements[index].image);
             break;
         }
     }

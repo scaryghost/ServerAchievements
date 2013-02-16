@@ -60,7 +60,7 @@ defaultproperties {
         IniOption="@Internal"
         Hint="View achievement list for selected achievement pack"
         TabOrder=3
-        WinTop= 0.0135
+        WinTop= 0.0535
         WinLeft=0.25
     End Object
     packNames=moComboBox'ServerAchievements.AchievementPanel.packComboBox'
@@ -68,7 +68,7 @@ defaultproperties {
     Begin Object Class=GUISectionBackground Name=BGStats
         bFillClient=True
         Caption="Achievements"
-        WinTop=0.054063
+        WinTop=0.01
         WinLeft=0.012240
         WinWidth=0.981520
         WinHeight=0.798982

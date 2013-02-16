@@ -142,7 +142,7 @@ defaultproperties {
     NotificationHeight= 70
     NotificationShowTime= 0.3
     NotificationHideTime= 0.5
-    NotificationHideDelay= 5.0
+    NotificationHideDelay= 3.5
     NotificationBorderSize= 7.0
     NotificationIconSpacing= 10.0
     NotificationBackground=Texture'InterfaceArt_tex.Menu.DownTickBlurry'

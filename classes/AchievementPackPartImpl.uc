@@ -11,7 +11,7 @@ struct Achievement {
 
     var float notifyIncrement;
     var byte timesNotified;
-    var byte canEarn;
+    var bool canEarn;
 };
 
 var PlayerController localController;

@@ -40,22 +40,27 @@ function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> dam
     local int i;
     local SAReplicationInfo playerSAri;
     local array<AchievementPack> achievementPacks;
+    local bool headshot;
 
     if (!super.PreventDeath(Killed, Killer, damageType, HitLocation)) {
         if (KFPlayerController(Killer) != none) {
             playerSAri= class'SAReplicationInfo'.static.findSAri(Killer.PlayerReplicationInfo);
-            if (playerSAri != none) {
-                playerSAri.getAchievementPacks(achievementPacks);
-                for(i= 0; i < achievementPacks.Length; i++) {
-                    achievementPacks[i].killedMonster(Killed, DamageType);
-                }
-            }
             for(i= 0; i < aliveMonsters.Length; i++) {
                 if (aliveMonsters[i].monster == Killed) {
+                    if (aliveMonsters[i].prevHeadHealth > KFMonster(Killed).HeadHealth) {
+                        headshot= true;
+                    }
                     aliveMonsters.remove(i, 1);
                     break;
                 }
             }
+            if (playerSAri != none) {
+                playerSAri.getAchievementPacks(achievementPacks);
+                for(i= 0; i < achievementPacks.Length; i++) {
+                    achievementPacks[i].killedMonster(Killed, DamageType, headshot);
+                }
+            }
+
         } else if(KFHumanPawn(Killed) != none) {
             playerSAri= class'SAReplicationInfo'.static.findSAri(Killed.PlayerReplicationInfo);
             if (playerSAri != none) {

@@ -43,8 +43,15 @@ function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> dam
     local bool headshot;
 
     if (!super.PreventDeath(Killed, Killer, damageType, HitLocation)) {
-        if (KFPlayerController(Killer) != none) {
-            playerSAri= class'SAReplicationInfo'.static.findSAri(Killer.PlayerReplicationInfo);
+        if(KFHumanPawn(Killed) != none) {
+            playerSAri= class'SAReplicationInfo'.static.findSAri(Killed.PlayerReplicationInfo);
+            if (playerSAri != none) {
+                playerSAri.getAchievementPacks(achievementPacks);
+                for(i= 0; i < achievementPacks.Length; i++) {
+                    achievementPacks[i].playerDied(Killer, DamageType);
+                }
+            }
+        } else if (KFMonster(Killed) != none) {
             for(i= 0; i < aliveMonsters.Length; i++) {
                 if (aliveMonsters[i].monster == Killed) {
                     if (aliveMonsters[i].prevHeadHealth > KFMonster(Killed).HeadHealth) {
@@ -54,22 +61,18 @@ function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> dam
                     break;
                 }
             }
-            if (playerSAri != none) {
-                playerSAri.getAchievementPacks(achievementPacks);
-                for(i= 0; i < achievementPacks.Length; i++) {
-                    achievementPacks[i].killedMonster(Killed, DamageType, KFMonster(Killed).LastMomentum, headshot);
+            if (KFPlayerController(Killer) != none) {
+                playerSAri= class'SAReplicationInfo'.static.findSAri(Killer.PlayerReplicationInfo);
+            
+                if (playerSAri != none) {
+                    playerSAri.getAchievementPacks(achievementPacks);
+                    for(i= 0; i < achievementPacks.Length; i++) {
+                        achievementPacks[i].killedMonster(Killed, DamageType, KFMonster(Killed).LastMomentum, headshot);
+                    }
                 }
             }
 
-        } else if(KFHumanPawn(Killed) != none) {
-            playerSAri= class'SAReplicationInfo'.static.findSAri(Killed.PlayerReplicationInfo);
-            if (playerSAri != none) {
-                playerSAri.getAchievementPacks(achievementPacks);
-                for(i= 0; i < achievementPacks.Length; i++) {
-                    achievementPacks[i].playerDied(Killer, DamageType);
-                }
-            }
-        }
+        } 
         return false;
     }
     return true;

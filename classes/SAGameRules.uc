@@ -3,6 +3,7 @@ class SAGameRules extends GameRules;
 struct HeadHealthState {
     var KFMonster monster;
     var float prevHeadHealth;
+    var bool prevHeadShot;
 };
 
 var array<HeadHealthState> aliveMonsters;
@@ -10,7 +11,7 @@ var array<HeadHealthState> aliveMonsters;
 function int NetDamage(int OriginalDamage, int Damage, pawn injured, pawn instigatedBy, 
         vector HitLocation, out vector Momentum, class<DamageType> DamageType) {
     local int newDamage, i;
-    local bool headshot;
+    local bool headShot;
     local SAReplicationInfo instigatorSAri;
     local array<AchievementPack> achievementPacks;
 
@@ -18,7 +19,10 @@ function int NetDamage(int OriginalDamage, int Damage, pawn injured, pawn instig
         if (aliveMonsters[i].monster == injured) {
             if (aliveMonsters[i].prevHeadHealth > KFMonster(injured).HeadHealth) {
                 aliveMonsters[i].prevHeadHealth= KFMonster(injured).HeadHealth;
-                headshot= true;
+                aliveMonsters[i].prevHeadShot= true;
+                headShot= true;
+            } else {
+                aliveMonsters[i].prevHeadShot= false;
             }
             break;
         }
@@ -26,10 +30,10 @@ function int NetDamage(int OriginalDamage, int Damage, pawn injured, pawn instig
     newDamage= super.NetDamage(OriginalDamage, Damage, injured, instigatedBy, HitLocation, Momentum, DamageType);
 
     instigatorSAri= class'SAReplicationInfo'.static.findSAri(instigatedBy.PlayerReplicationInfo);
-    if (instigatorSAri != none) {
+    if (instigatorSAri != none && KFMonster(injured) != none) {
         instigatorSAri.getAchievementPacks(achievementPacks);
         for(i= 0; i < achievementPacks.Length; i++) {
-            achievementPacks[i].damagedMonster(newDamage, injured, DamageType, headshot);
+            achievementPacks[i].damagedMonster(newDamage, injured, DamageType, KFMonster(injured).bDecapitated || headShot);
         }
     }
     
@@ -40,7 +44,7 @@ function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> dam
     local int i;
     local SAReplicationInfo playerSAri;
     local array<AchievementPack> achievementPacks;
-    local bool headshot;
+    local bool headShot;
 
     if (!super.PreventDeath(Killed, Killer, damageType, HitLocation)) {
         if(KFHumanPawn(Killed) != none) {
@@ -54,9 +58,7 @@ function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> dam
         } else if (KFMonster(Killed) != none) {
             for(i= 0; i < aliveMonsters.Length; i++) {
                 if (aliveMonsters[i].monster == Killed) {
-                    if (aliveMonsters[i].prevHeadHealth > KFMonster(Killed).HeadHealth) {
-                        headshot= true;
-                    }
+                    headShot= aliveMonsters[i].monster.bDecapitated || aliveMonsters[i].prevHeadShot;
                     aliveMonsters.remove(i, 1);
                     break;
                 }
@@ -67,7 +69,7 @@ function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> dam
                 if (playerSAri != none) {
                     playerSAri.getAchievementPacks(achievementPacks);
                     for(i= 0; i < achievementPacks.Length; i++) {
-                        achievementPacks[i].killedMonster(Killed, DamageType, KFMonster(Killed).LastMomentum, headshot);
+                        achievementPacks[i].killedMonster(Killed, DamageType, KFMonster(Killed).LastMomentum, headShot);
                     }
                 }
             }

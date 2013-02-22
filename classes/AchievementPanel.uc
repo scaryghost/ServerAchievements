@@ -71,7 +71,7 @@ defaultproperties {
         WinTop=0.01
         WinLeft=0.012240
         WinWidth=0.981520
-        WinHeight=0.798982
+        WinHeight=0.85
     End Object
     panelBg=GUISectionBackground'ServerAchievements.AchievementPanel.BGStats'
 

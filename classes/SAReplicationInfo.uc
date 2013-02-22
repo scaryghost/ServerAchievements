@@ -17,6 +17,8 @@ simulated function Tick(float DeltaTime) {
 
     if (PlayerController(Owner) != Level.GetLocalPlayerController()) {
         steamid64= PlayerController(Owner).GetPlayerIDHash();
+    } else {
+        steamid64= class'SAMutator'.default.localHostSteamID64;
     }
     
     if (Role == ROLE_Authority) {

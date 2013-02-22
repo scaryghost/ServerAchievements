@@ -19,6 +19,7 @@ var array<Achievement> achievements;
 var bool broadcastedWaveEnd;
 var bool dataModified;
 var string packName;
+var Texture defaultAchievementImage;
 
 replication {
     reliable if (Role == ROLE_AUTHORITY) 
@@ -60,7 +61,11 @@ simulated function fillAchievementInfo(int index, out string title, out string d
     out int maxProgress, out int progress, out byte completed) {
     title= achievements[index].title;
     description= achievements[index].description;
-    image= achievements[index].image;
+    if (achievements[index].image == none) {
+        image= defaultAchievementImage;
+    } else {
+        image= achievements[index].image;
+    }
     maxProgress= achievements[index].maxProgress;
     progress= achievements[index].progress;
     completed= achievements[index].completed;
@@ -137,11 +142,17 @@ function addProgress(int index, int offset) {
 
 simulated function localAchievementCompleted(int index) {
     local int i;
+    local Texture usedImage;
 
     for(i= 0; i < localController.Player.LocalInteractions.Length; i++) {
         if (SAInteraction(localController.Player.LocalInteractions[i]) != none) {
+            if (achievements[index].image == none) {
+                usedImage= defaultAchievementImage;
+            } else {
+                usedImage= achievements[index].image;
+            }
             SAInteraction(localController.Player.LocalInteractions[i]).addMessage("Achivement Unlocked!", 
-                packName $ ";" $ achievements[index].title, achievements[index].image);
+                packName $ ";" $ achievements[index].title, usedImage);
             break;
         }
     }
@@ -149,5 +160,6 @@ simulated function localAchievementCompleted(int index) {
 
 defaultproperties {
     broadcastedWaveEnd= true
+    defaultAchievementImage= Texture'ServerAchievements.HUD.DefaultIcon'
 }
 

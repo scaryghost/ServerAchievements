@@ -113,14 +113,11 @@ function PostRender(Canvas canvas) {
     TempX += NotificationBorderSize;
     TempY += NotificationBorderSize;
 
-    if (messageQueue[0].image != none) {
-        IconSize = NotificationHeight - (NotificationBorderSize * 2.0);
-        canvas.SetPos(TempX, TempY);
-        canvas.DrawTile(messageQueue[0].image, IconSize, IconSize, 0, 0, messageQueue[0].image.USize, messageQueue[0].image.VSize);
-
-        // Offset for desired Spacing between Icon and Text
-        TempX += IconSize + NotificationIconSpacing;
-    }
+    IconSize= NotificationHeight - (NotificationBorderSize * 2.0);
+    canvas.SetPos(TempX, TempY);
+    canvas.DrawTile(messageQueue[0].image, IconSize, IconSize, 0, 0, messageQueue[0].image.USize, messageQueue[0].image.VSize);
+    // Offset for desired Spacing between Icon and Text
+    TempX += IconSize + NotificationIconSpacing;
 
     canvas.SetPos(TempX, TempY);
     canvas.DrawText(messageQueue[0].header);
@@ -145,7 +142,7 @@ defaultproperties {
     NotificationHideDelay= 3.5
     NotificationBorderSize= 7.0
     NotificationIconSpacing= 10.0
-    NotificationBackground=Texture'InterfaceArt_tex.Menu.DownTickBlurry'
-
+    NotificationBackground= Texture'ServerAchievements.HUD.notification'
+    
     achievementPanel=(ClassName="ServerAchievements.AchievementPanel",Caption="Achievements",Hint="View custom achievement progress")
 }

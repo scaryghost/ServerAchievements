@@ -95,8 +95,9 @@ function Timer() {
 }
 
 simulated event PostNetBeginPlay() {
-    if (Level.NetMode != NM_DedicatedServer) {
-        localController= Level.GetLocalPlayerController();
+    localController= Level.GetLocalPlayerController();
+    if (localController != PlayerController(Owner)) {
+        localController= none;
     }
 }
 
@@ -107,11 +108,17 @@ simulated function flushToClient(int index, int progress, byte completed) {
 
 simulated function notifyProgress(int index) {
     local int i;
+    local Texture usedImage;
 
-    for(i= 0; i < localController.Player.LocalInteractions.Length; i++) {
+    for(i= 0; localController != none && i < localController.Player.LocalInteractions.Length; i++) {
         if (SAInteraction(localController.Player.LocalInteractions[i]) != none) {
+            if (achievements[index].image == none) {
+                usedImage= defaultAchievementImage;
+            } else {
+                usedImage= achievements[index].image;
+            }
             SAInteraction(localController.Player.LocalInteractions[i]).addMessage("Achivement In Progress", 
-                achievements[index].title@";("$ achievements[index].progress $ "/" $ achievements[index].maxProgress $ ")", achievements[index].image);
+                achievements[index].title@";("$ achievements[index].progress $ "/" $ achievements[index].maxProgress $ ")", usedImage);
             break;
         }
     }
@@ -144,7 +151,7 @@ simulated function localAchievementCompleted(int index) {
     local int i;
     local Texture usedImage;
 
-    for(i= 0; i < localController.Player.LocalInteractions.Length; i++) {
+    for(i= 0; localController != none && i < localController.Player.LocalInteractions.Length; i++) {
         if (SAInteraction(localController.Player.LocalInteractions[i]) != none) {
             if (achievements[index].image == none) {
                 usedImage= defaultAchievementImage;

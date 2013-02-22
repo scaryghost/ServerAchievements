@@ -47,8 +47,7 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
     local PlayerReplicationInfo pri;
     local SAReplicationInfo saRI;
 
-    if (PlayerReplicationInfo(Other) != none && 
-            PlayerReplicationInfo(Other).Owner != none) {
+    if (PlayerReplicationInfo(Other) != none && Other.Owner != none) {
         pri= PlayerReplicationInfo(Other);
         saRI= Spawn(class'SAReplicationInfo', pri.Owner);
         saRI.ownerPRI= pri;

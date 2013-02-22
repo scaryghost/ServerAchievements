@@ -69,7 +69,7 @@ function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> dam
                 if (playerSAri != none) {
                     playerSAri.getAchievementPacks(achievementPacks);
                     for(i= 0; i < achievementPacks.Length; i++) {
-                        achievementPacks[i].killedMonster(Killed, DamageType, KFMonster(Killed).LastMomentum, headShot);
+                        achievementPacks[i].killedMonster(Killed, DamageType, headShot);
                     }
                 }
             }

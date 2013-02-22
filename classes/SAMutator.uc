@@ -35,7 +35,7 @@ function PostBeginPlay() {
     Level.Game.GameRulesModifiers= grObj;
 
     for(i= 0; i < achievementPackNames.Length; i++) {
-        loadedAchievementPacks[i]= class<AchievementPack>(DynamicLoadObject(achievementPAckNames[i], class'Class'));
+        loadedAchievementPacks[i]= class<AchievementPack>(DynamicLoadObject(achievementPackNames[i], class'Class'));
         AddToPackageMap(string(loadedAchievementPacks[i].Outer.name));
     }
     if (useRemoteDatabase) {
@@ -67,15 +67,17 @@ function sendAchievements(SAReplicationInfo saRI) {
     local AchievementPack pack;
     local AchievementDataObject dataObj;
 
-    dataObj= new(None, saRI.steamid64) class'AchievementDataObject';
-    for(j= 0; j < loadedAchievementPacks.Length; j++) {
-        pack= Spawn(loadedAchievementPacks[j], saRI.Owner);
-        if (useRemoteDatabase) {
-            serverLink.getAchievementData(saRI.steamid64, pack.getPackName(), pack);
-        } else {
-            pack.deserializeUserData(dataObj.getSerializedData(pack.getPackName()));
+    if (Controller(saRI.Owner) != none && Controller(saRI.Owner).bIsPlayer) {
+        dataObj= new(None, saRI.steamid64) class'AchievementDataObject';
+        for(j= 0; j < loadedAchievementPacks.Length; j++) {
+            pack= Spawn(loadedAchievementPacks[j], saRI.Owner);
+            if (useRemoteDatabase) {
+                serverLink.getAchievementData(saRI.steamid64, pack.getPackName(), pack);
+            } else {
+                pack.deserializeUserData(dataObj.getSerializedData(pack.getPackName()));
+            }
+            saRI.addAchievementPack(pack);
         }
-        saRI.addAchievementPack(pack);
     }
 }
 
@@ -94,6 +96,7 @@ function NotifyLogout(Controller Exiting) {
         } else {
             dataObj.updateSerializedData(packs[i].getPackName(), packs[i].serializeUserData());
         }
+        packs[i].Destroy();
     }
     if (!useRemoteDatabase) {
         dataObj.SaveConfig();

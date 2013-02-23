@@ -47,13 +47,17 @@ function deserializeUserData(string data) {
     local array<string> parts, achvData;
     local int i, j;
     
-    Split(data, ";", parts);
-    for(i= 0; i < parts.Length; i++) {
-        Split(parts[i], ",", achvData);
-        j= int(achvData[0]);
-        achievements[j].completed= byte(achvData[1]);
-        achievements[j].progress= int(achvData[2]);
-        flushToClient(j, achievements[j].progress, achievements[j].completed);
+    if (data != "") {
+        Split(data, ";", parts);
+        for(i= 0; i < parts.Length; i++) {
+            Split(parts[i], ",", achvData);
+            if (achvData.Length == 3) {
+                j= int(achvData[0]);
+                achievements[j].completed= byte(achvData[1]);
+                achievements[j].progress= int(achvData[2]);
+                flushToClient(j, achievements[j].progress, achievements[j].completed);
+            }
+        }
     }
 }
 
@@ -95,9 +99,8 @@ function Timer() {
 }
 
 simulated event PostNetBeginPlay() {
-    localController= Level.GetLocalPlayerController();
-    if (localController != PlayerController(Owner)) {
-        localController= none;
+    if (ScriptedController(Owner) == none) {
+        localController= Level.GetLocalPlayerController();
     }
 }
 

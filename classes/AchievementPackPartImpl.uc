@@ -84,16 +84,24 @@ simulated function string getPackName() {
 }
 
 function Timer() {
-    if (!broadcastedWaveEnd && KFGameType(Level.Game) != none && !KFGameType(Level.Game).bWaveInProgress) {
+    local int realWaveNum;
+
+    if (!broadcastedWaveEnd && !KFGameType(Level.Game).bWaveInProgress) {
         waveEnd(KFGameType(Level.Game).WaveNum);
         broadcastedWaveEnd= true;
-    } else if (broadcastedWaveEnd && KFGameType(Level.Game) != none && KFGameType(Level.Game).bWaveInProgress) {
+    } else if (broadcastedWaveEnd && KFGameType(Level.Game).bWaveInProgress) {
         waveStart(KFGameType(Level.Game).WaveNum + 1);
         broadcastedWaveEnd= false;
     }
     if (KFGameReplicationInfo(Level.Game.GameReplicationInfo).EndGameType != 0) {
-        matchEnd(class'KFGameType'.static.GetCurrentMapName(Level), Level.Game.GameDifficulty, 
-            KFGameType(Level.Game).KFGameLength, KFGameReplicationInfo(Level.Game.GameReplicationInfo).EndGameType);
+        if (KFGameReplicationInfo(Level.Game.GameReplicationInfo).EndGameType == 1) {
+            realWaveNum= KFGameType(Level.Game).WaveNum + 1;
+            waveEnd(realWaveNum);
+        } else {
+            realWaveNum= KFGameType(Level.Game).WaveNum;
+        }
+        matchEnd(class'KFGameType'.static.GetCurrentMapName(Level), Level.Game.GameDifficulty, KFGameType(Level.Game).KFGameLength, 
+            KFGameReplicationInfo(Level.Game.GameReplicationInfo).EndGameType, realWaveNum);
         SetTimer(0, false);
     }
 }
@@ -120,7 +128,7 @@ simulated function notifyProgress(int index) {
             } else {
                 usedImage= achievements[index].image;
             }
-            SAInteraction(localController.Player.LocalInteractions[i]).addMessage("Achivement In Progress", 
+            SAInteraction(localController.Player.LocalInteractions[i]).addMessage("Achievement In Progress", 
                 achievements[index].title@";("$ achievements[index].progress $ "/" $ achievements[index].maxProgress $ ")", usedImage);
             break;
         }
@@ -161,7 +169,7 @@ simulated function localAchievementCompleted(int index) {
             } else {
                 usedImage= achievements[index].image;
             }
-            SAInteraction(localController.Player.LocalInteractions[i]).addMessage("Achivement Unlocked!", 
+            SAInteraction(localController.Player.LocalInteractions[i]).addMessage("Achievement Unlocked!", 
                 packName $ ";" $ achievements[index].title, usedImage);
             break;
         }

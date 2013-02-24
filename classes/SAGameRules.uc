@@ -52,7 +52,7 @@ function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> dam
             if (playerSAri != none) {
                 playerSAri.getAchievementPacks(achievementPacks);
                 for(i= 0; i < achievementPacks.Length; i++) {
-                    achievementPacks[i].playerDied(Killer, DamageType);
+                    achievementPacks[i].playerDied(Killer, DamageType, KFGameType(Level.Game).WaveNum + 1);
                 }
             }
         } else if (KFMonster(Killed) != none) {

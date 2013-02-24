@@ -3,10 +3,10 @@ class AchievementPack extends Actor
 
 /** TODO: Hook in trader events */
 /** TODO: Hook in weapon usage */
-event matchEnd(string mapname, float difficulty, int length, byte result);
+event matchEnd(string mapname, float difficulty, int length, byte result, int waveNum);
 event waveStart(int waveNum);
 event waveEnd(int waveNum);
-event playerDied(Controller killer, class<DamageType> damageType);
+event playerDied(Controller killer, class<DamageType> damageType, int waveNum);
 event killedMonster(Pawn target, class<DamageType> damageType, bool headshot);
 event damagedMonster(int damage, Pawn target, class<DamageType> damageType, bool headshot);
 

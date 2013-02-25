@@ -118,11 +118,14 @@ static function FillPlayInfo(PlayInfo PlayInfo) {
     PlayInfo.AddSetting("ServerAchievements", "hostname", "Remote Server Address", 0, 0, "Text", "128",,, true);
     PlayInfo.AddSetting("ServerAchievements", "tcpPort", "Remote Server Port", 0, 0, "Text",,,, true);
     PlayInfo.AddSetting("ServerAchievements", "localHostSteamID64", "Local Host SteamID64", 0, 0, "Text", "128");
+    PlayInfo.AddSetting("ServerAchievements", "achievementPackNames", "Achievement Packs", 1, 1, "Text", "42",,,);
 }
 
 
 static event string GetDescriptionText(string property) {
     switch(property) {
+        case "achievementPackNames":
+            return "Achievement packs to load.  Must be in full package.classname format";
         case "localHostSteamID64":
             return "SteamID64 of the local host.  Only used for solo games or listen server host";
         case "useRemoteDatabase":

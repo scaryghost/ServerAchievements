@@ -18,7 +18,7 @@ function PostBeginPlay() {
 
 event Resolved(IpAddr addr) {
     serverAddr= addr;
-    serverAddr.port= class'SAMutator'.default.port;
+    serverAddr.port= class'SAMutator'.default.tcpPort;
 
     if (!Open(serverAddr)) {
         log("Cannot reach remote host"@IpAddrToString(serverAddr));

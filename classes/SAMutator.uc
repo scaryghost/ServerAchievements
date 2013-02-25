@@ -2,7 +2,7 @@ class SAMutator extends Mutator
     config(ServerAchievements);
 
 var() config bool useRemoteDatabase;
-var() config int port;
+var() config int tcpPort;
 var() config string hostname;
 var() config string localHostSteamID64;
 var() config array<string> achievementPackNames;
@@ -114,9 +114,9 @@ function NotifyLogout(Controller Exiting) {
 
 static function FillPlayInfo(PlayInfo PlayInfo) {
     Super.FillPlayInfo(PlayInfo);
-    PlayInfo.AddSetting("ServerAchievements", "useRemoteDatabase", "Use Remote Database", 0, 0, "Check");
-    PlayInfo.AddSetting("ServerAchievements", "hostname", "Remote Server Address", 0, 0, "Text", "128");
-    PlayInfo.AddSetting("ServerAchievements", "port", "Remote Server Port", 0, 0, "Text");
+    PlayInfo.AddSetting("ServerAchievements", "useRemoteDatabase", "Use Remote Database", 0, 0, "Check",,,, true);
+    PlayInfo.AddSetting("ServerAchievements", "hostname", "Remote Server Address", 0, 0, "Text", "128",,, true);
+    PlayInfo.AddSetting("ServerAchievements", "tcpPort", "Remote Server Port", 0, 0, "Text",,,, true);
     PlayInfo.AddSetting("ServerAchievements", "localHostSteamID64", "Local Host SteamID64", 0, 0, "Text", "128");
 }
 
@@ -129,8 +129,8 @@ static event string GetDescriptionText(string property) {
             return "Store achievement progress on a remote server";
         case "hostname":
             return "Host name of the remote server";
-        case "port":
-            return "Port number of the remote server";
+        case "tcpPort":
+            return "TCP Port number of the remote server";
         default:
             return Super.GetDescriptionText(property);
     }

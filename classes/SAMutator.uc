@@ -23,6 +23,7 @@ simulated function Tick(float DeltaTime) {
 
 function PostBeginPlay() {
     local int i;
+    local class<AchievementPack> loadedPack;
 
     if (KFGameType(Level.Game) == none) {
         Destroy();
@@ -34,10 +35,18 @@ function PostBeginPlay() {
     grObj.NextGameRules= Level.Game.GameRulesModifiers;
     Level.Game.GameRulesModifiers= grObj;
 
+    log("Attempting to load"@achievementPackNames.Length@"achievement packs");
     for(i= 0; i < achievementPackNames.Length; i++) {
-        loadedAchievementPacks[i]= class<AchievementPack>(DynamicLoadObject(achievementPackNames[i], class'Class'));
-        AddToPackageMap(string(loadedAchievementPacks[i].Outer.name));
+        loadedPack= class<AchievementPack>(DynamicLoadObject(achievementPackNames[i], class'Class'));
+        if (loadedPack == none) {
+            Warn("Failed to load achievement pack"@achievementPackNames[i]);
+        } else {
+            log("Successfully loaded"@achievementPackNames[i]);
+            loadedAchievementPacks[loadedAchievementPacks.Length]= loadedPack;
+            AddToPackageMap(string(loadedPack.Outer.name));
+        }
     }
+    log("Successfully loaded"@loadedAchievementPacks.Length@"achievement packs");
     if (useRemoteDatabase) {
         serverLink= spawn(class'ServerTcpLink');
     }

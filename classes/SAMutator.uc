@@ -5,7 +5,7 @@ var() config bool useRemoteDatabase;
 var() config int tcpPort;
 var() config string hostname;
 var() config string localHostSteamID64;
-var() config array<string> achievementPackNames;
+var() config array<string> achievementPacks;
 
 var array<class<AchievementPack> > loadedAchievementPacks;
 var ServerTcpLink serverLink;
@@ -35,13 +35,13 @@ function PostBeginPlay() {
     grObj.NextGameRules= Level.Game.GameRulesModifiers;
     Level.Game.GameRulesModifiers= grObj;
 
-    log("Attempting to load"@achievementPackNames.Length@"achievement packs");
-    for(i= 0; i < achievementPackNames.Length; i++) {
-        loadedPack= class<AchievementPack>(DynamicLoadObject(achievementPackNames[i], class'Class'));
+    log("Attempting to load"@achievementPacks.Length@"achievement packs");
+    for(i= 0; i < achievementPacks.Length; i++) {
+        loadedPack= class<AchievementPack>(DynamicLoadObject(achievementPacks[i], class'Class'));
         if (loadedPack == none) {
-            Warn("Failed to load achievement pack"@achievementPackNames[i]);
+            Warn("Failed to load achievement pack"@achievementPacks[i]);
         } else {
-            log("Successfully loaded"@achievementPackNames[i]);
+            log("Successfully loaded"@achievementPacks[i]);
             loadedAchievementPacks[loadedAchievementPacks.Length]= loadedPack;
             AddToPackageMap(string(loadedPack.Outer.name));
         }
@@ -118,13 +118,13 @@ static function FillPlayInfo(PlayInfo PlayInfo) {
     PlayInfo.AddSetting("ServerAchievements", "hostname", "Remote Server Address", 0, 0, "Text", "128",,, true);
     PlayInfo.AddSetting("ServerAchievements", "tcpPort", "Remote Server Port", 0, 0, "Text",,,, true);
     PlayInfo.AddSetting("ServerAchievements", "localHostSteamID64", "Local Host SteamID64", 0, 0, "Text", "128");
-    PlayInfo.AddSetting("ServerAchievements", "achievementPackNames", "Achievement Packs", 1, 1, "Text", "42",,,);
+    PlayInfo.AddSetting("ServerAchievements", "achievementPacks", "Achievement Packs", 1, 1, "Text", "42",,,);
 }
 
 
 static event string GetDescriptionText(string property) {
     switch(property) {
-        case "achievementPackNames":
+        case "achievementPacks":
             return "Achievement packs to load.  Must be in full package.classname format";
         case "localHostSteamID64":
             return "SteamID64 of the local host.  Only used for solo games or listen server host";

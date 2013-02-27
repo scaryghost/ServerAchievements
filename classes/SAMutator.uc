@@ -105,7 +105,6 @@ function NotifyLogout(Controller Exiting) {
         } else {
             dataObj.updateSerializedData(packs[i].getPackName(), packs[i].serializeUserData());
         }
-        packs[i].Destroy();
     }
     if (!useRemoteDatabase) {
         dataObj.SaveConfig();

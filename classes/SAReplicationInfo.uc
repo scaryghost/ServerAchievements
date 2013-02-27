@@ -44,7 +44,7 @@ function Timer() {
     local int i;
     local bool eventTriggered;
 
-    do {
+    for(i= 0; i < achievementPacks.Length && (eventTriggered || i == 0); i++) {
         if (!broadcastedWaveEnd && !KFGameType(Level.Game).bWaveInProgress) {
             achievementPacks[i].waveEnd(KFGameType(Level.Game).WaveNum);
             eventTriggered= true;
@@ -64,8 +64,7 @@ function Timer() {
             eventTriggered= true;
             SetTimer(0, false);
         }
-        i++;
-    } until (!eventTriggered || i >= achievementPacks.Length);
+    }
     if (eventTriggered) {
         broadcastedWaveEnd= !broadcastedWaveEnd;
     }

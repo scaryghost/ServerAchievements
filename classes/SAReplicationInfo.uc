@@ -1,6 +1,6 @@
 class SAReplicationInfo extends ReplicationInfo;
 
-var string steamid64;
+var string steamid64, offset;
 var SAMutator mutRef;
 var PlayerReplicationInfo ownerPRI;
 var array<AchievementPack> achievementPacks;
@@ -19,6 +19,11 @@ simulated function Tick(float DeltaTime) {
         steamid64= PlayerController(Owner).GetPlayerIDHash();
     } else {
         steamid64= class'SAMutator'.default.localHostSteamID64;
+    }
+    if (!PlatformIsWindows()) {
+        log("Server not on Window OS.  Adding steamid64 offset (" $ steamid64 @ "+" @ offset $ ")");
+        class'Utility'.static.addOffset(steamid64, offset);
+        log("New steamid64:"@steamid64);
     }
     
     if (Role == ROLE_Authority) {
@@ -76,4 +81,6 @@ static function SAReplicationInfo findSAri(PlayerReplicationInfo pri) {
 defaultproperties {
     RemoteRole=ROLE_SimulatedProxy
     bAlwaysRelevant=True
+
+    offset= "76561197960265728"
 }

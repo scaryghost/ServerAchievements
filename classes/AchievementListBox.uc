@@ -1,3 +1,7 @@
+/**
+ * Container for the achievement list
+ * @author etsai (Scary Ghost)
+ */
 class AchievementListBox extends GUIListBoxBase;
 
 var AchievementList listObj;

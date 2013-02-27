@@ -1,3 +1,7 @@
+/**
+ * Manages the list of achievements to display in the panel
+ * @author etsai (Scary Ghost)
+ */
 class AchievementList extends KFGui.KFAchievementsList;
 
 var AchievementPack selectedPack;
@@ -6,7 +10,6 @@ function setAchievementPack(AchievementPack pack) {
     SetIndex(0);
     selectedPack= pack;
     ItemCount= selectedPack.numAchievements();
-    log("Number of achievements"@ItemCount);
 
     if (bNotify) {
         CheckLinkedObjects(Self);

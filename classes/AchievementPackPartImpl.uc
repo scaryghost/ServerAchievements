@@ -1,3 +1,9 @@
+/**
+ * Partial implementation of the AchievementPack interface.  Provides member 
+ * variables for storing the achievements, handles replication, and serializes 
+ * achievement data
+ * @author etsai (Scary Ghost)
+ */
 class AchievementPackPartImpl extends AchievementPack
     abstract;
 

@@ -1,3 +1,7 @@
+/**
+ * Custom game rules for ServerAchievements
+ * @author etsai (Scary Ghost)
+ */
 class SAGameRules extends GameRules;
 
 struct HeadHealthState {

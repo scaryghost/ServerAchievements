@@ -1,3 +1,8 @@
+/**
+ * Custom interaction for displaying the achievement notifications and 
+ * adding a tab to the mid game menu
+ * @author etsai (Scary Ghost)
+ */
 class SAInteraction extends Interaction;
 
 struct PopupMessage {

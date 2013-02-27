@@ -1,3 +1,7 @@
+/**
+ * Commandlet demoing the addOffset function
+ * @author etsai (Scary Ghost)
+ */
 class SteamIDOffset extends Commandlet;
  
 function int Main(string TextParameters) {

@@ -1,3 +1,7 @@
+/**
+ * Mutator class for ServerAchievements
+ * @author etsai (Scary Ghost)
+ */
 class SAMutator extends Mutator
     config(ServerAchievements);
 

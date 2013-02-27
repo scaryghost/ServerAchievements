@@ -1,8 +1,10 @@
+/**
+ * Interface defining the properties of an achievement pack
+ * @author etsai (Scary Ghost)
+ */
 class AchievementPack extends Actor
     abstract;
 
-/** TODO: Hook in trader events */
-/** TODO: Hook in weapon usage */
 event matchEnd(string mapname, float difficulty, int length, byte result, int waveNum);
 event waveStart(int waveNum);
 event waveEnd(int waveNum);

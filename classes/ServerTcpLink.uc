@@ -1,3 +1,7 @@
+/**
+ * Creates a TCP link with the remote database to store achievement data on another machine
+ * @author etsai (Scary Ghost)
+ */
 class ServerTcpLink extends TcpLink;
 
 var string separator;

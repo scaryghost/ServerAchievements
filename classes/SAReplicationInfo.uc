@@ -1,3 +1,7 @@
+/**
+ * Custom replication info class for ServerAchievements
+ * @author etsai (Scary Ghost)
+ */
 class SAReplicationInfo extends ReplicationInfo;
 
 var bool broadcastedWaveEnd;

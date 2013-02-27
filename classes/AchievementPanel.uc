@@ -1,3 +1,7 @@
+/**
+ * Panel for displaying achievement progress
+ * @author etsai (Scary Ghost)
+ */
 class AchievementPanel extends KFGui.KFTab_MidGameVoiceChat;
 
 var automated GUISectionBackground panelBg;

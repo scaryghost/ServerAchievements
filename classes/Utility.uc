@@ -1,3 +1,7 @@
+/**
+ * Provides auxiliary functions for the package
+ * @author etsai (Scary Ghost)
+ */
 class Utility extends Object;
 
 static function addOffset(out string num, string offset) {

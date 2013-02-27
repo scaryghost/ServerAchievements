@@ -1,3 +1,8 @@
+/**
+ * Data object representation of an achievement pack.  Stores achievement 
+ * progress locally for each player
+ * @author etsai (Scary Ghost)
+ */
 class AchievementDataObject extends Object
     PerObjectConfig
     config(ServerAchievementsProgress);

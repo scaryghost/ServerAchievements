@@ -1,5 +1,6 @@
 class SAReplicationInfo extends ReplicationInfo;
 
+var bool broadcastedWaveEnd;
 var string steamid64, offset;
 var SAMutator mutRef;
 var PlayerReplicationInfo ownerPRI;
@@ -34,7 +35,40 @@ simulated function Tick(float DeltaTime) {
             addAchievementPack(pack);
         }
     }
+    SetTimer(1.0, true);
     Disable('Tick');
+}
+
+function Timer() {
+    local int realWaveNum;
+    local int i;
+    local bool eventTriggered;
+
+    do {
+        if (!broadcastedWaveEnd && !KFGameType(Level.Game).bWaveInProgress) {
+            achievementPacks[i].waveEnd(KFGameType(Level.Game).WaveNum);
+            eventTriggered= true;
+        } else if (broadcastedWaveEnd && KFGameType(Level.Game).bWaveInProgress) {
+            achievementPacks[i].waveStart(KFGameType(Level.Game).WaveNum + 1);
+            eventTriggered= true;
+        }
+        if (KFGameReplicationInfo(Level.Game.GameReplicationInfo).EndGameType != 0) {
+            if (KFGameReplicationInfo(Level.Game.GameReplicationInfo).EndGameType == 1) {
+                realWaveNum= KFGameType(Level.Game).WaveNum + 1;
+                achievementPacks[i].waveEnd(realWaveNum);
+            } else {
+                realWaveNum= KFGameType(Level.Game).WaveNum;
+            }
+            achievementPacks[i].matchEnd(class'KFGameType'.static.GetCurrentMapName(Level), Level.Game.GameDifficulty, 
+                KFGameType(Level.Game).KFGameLength, KFGameReplicationInfo(Level.Game.GameReplicationInfo).EndGameType, realWaveNum);
+            eventTriggered= true;
+            SetTimer(0, false);
+        }
+        i++;
+    } until (!eventTriggered || i >= achievementPacks.Length);
+    if (eventTriggered) {
+        broadcastedWaveEnd= !broadcastedWaveEnd;
+    }
 }
 
 simulated function addAchievementPack(AchievementPack pack) {
@@ -83,4 +117,5 @@ defaultproperties {
     bAlwaysRelevant=True
 
     offset= "76561197960265728"
+    broadcastedWaveEnd= true
 }

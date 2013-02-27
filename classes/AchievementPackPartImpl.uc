@@ -16,7 +16,6 @@ struct Achievement {
 
 var PlayerController localController;
 var array<Achievement> achievements;
-var bool broadcastedWaveEnd;
 var bool dataModified;
 var string packName;
 var Texture defaultAchievementImage;
@@ -24,10 +23,6 @@ var Texture defaultAchievementImage;
 replication {
     reliable if (Role == ROLE_AUTHORITY) 
         localAchievementCompleted, notifyProgress, flushToClient;
-}
-
-event PostBeginPlay() {
-    SetTimer(1.0, true);
 }
 
 function string serializeUserData() {
@@ -81,29 +76,6 @@ simulated function int numAchievements() {
 
 simulated function string getPackName() {
     return packName;
-}
-
-function Timer() {
-    local int realWaveNum;
-
-    if (!broadcastedWaveEnd && !KFGameType(Level.Game).bWaveInProgress) {
-        waveEnd(KFGameType(Level.Game).WaveNum);
-        broadcastedWaveEnd= true;
-    } else if (broadcastedWaveEnd && KFGameType(Level.Game).bWaveInProgress) {
-        waveStart(KFGameType(Level.Game).WaveNum + 1);
-        broadcastedWaveEnd= false;
-    }
-    if (KFGameReplicationInfo(Level.Game.GameReplicationInfo).EndGameType != 0) {
-        if (KFGameReplicationInfo(Level.Game.GameReplicationInfo).EndGameType == 1) {
-            realWaveNum= KFGameType(Level.Game).WaveNum + 1;
-            waveEnd(realWaveNum);
-        } else {
-            realWaveNum= KFGameType(Level.Game).WaveNum;
-        }
-        matchEnd(class'KFGameType'.static.GetCurrentMapName(Level), Level.Game.GameDifficulty, KFGameType(Level.Game).KFGameLength, 
-            KFGameReplicationInfo(Level.Game.GameReplicationInfo).EndGameType, realWaveNum);
-        SetTimer(0, false);
-    }
 }
 
 simulated event PostNetBeginPlay() {
@@ -177,7 +149,6 @@ simulated function localAchievementCompleted(int index) {
 }
 
 defaultproperties {
-    broadcastedWaveEnd= true
     defaultAchievementImage= Texture'ServerAchievements.HUD.DefaultIcon'
 }
 

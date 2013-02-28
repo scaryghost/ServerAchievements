@@ -37,7 +37,7 @@ function int NetDamage(int OriginalDamage, int Damage, pawn injured, pawn instig
     if (instigatorSAri != none && KFMonster(injured) != none) {
         instigatorSAri.getAchievementPacks(achievementPacks);
         for(i= 0; i < achievementPacks.Length; i++) {
-            achievementPacks[i].damagedMonster(newDamage, injured, DamageType, KFMonster(injured).bDecapitated || headShot);
+            achievementPacks[i].damagedMonster(newDamage, injured, DamageType, headShot);
         }
     }
     
@@ -62,7 +62,7 @@ function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> dam
         } else if (KFMonster(Killed) != none) {
             for(i= 0; i < aliveMonsters.Length; i++) {
                 if (aliveMonsters[i].monster == Killed) {
-                    headShot= aliveMonsters[i].monster.bDecapitated || aliveMonsters[i].prevHeadShot;
+                    headShot= aliveMonsters[i].prevHeadShot;
                     aliveMonsters.remove(i, 1);
                     break;
                 }

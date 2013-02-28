@@ -12,12 +12,12 @@ struct Achievement {
     var string description;
     var Texture image;
     var int maxProgress;
+    var float notifyIncrement;
+
     var int progress;
     var byte completed;
 
-    var float notifyIncrement;
     var byte timesNotified;
-    var bool canEarn;
 };
 
 var PlayerController localController;
@@ -57,6 +57,9 @@ function deserializeUserData(string data) {
                 achievements[j].completed= byte(achvData[1]);
                 achievements[j].progress= int(achvData[2]);
                 flushToClient(j, achievements[j].progress, achievements[j].completed);
+                if (achievements[j].completed == 0 && achievements[j].maxProgress != 0) {
+                    achievements[j].timesNotified= int((achievements[j].progress/achievements[j].maxProgress)/achievements[j].notifyIncrement);
+                }
             }
         }
     }

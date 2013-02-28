@@ -1,6 +1,5 @@
-AchievementBase
+Server Achievements
 ===============
-
 ## Version
 1.0
 
@@ -29,3 +28,7 @@ https://github.com/scaryghost/ServerAchievements/wiki/Creating-Custom-Achievemen
 
 ## Source Code
 https://github.com/scaryghost/ServerAchievements
+
+## Acknowledgements
+    Checkmark image   - http://www.freepik.com/free-vector/green-checkmark-and-red-minus_518315.htm
+    Notification bgnd - http://xdotnano.wordpress.com/apparition2/

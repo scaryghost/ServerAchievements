@@ -4,43 +4,75 @@
  */
 class SAReplicationInfo extends ReplicationInfo;
 
-var bool broadcastedWaveEnd;
+var bool broadcastedWaveEnd, initialized;
 var string steamid64, offset;
 var SAMutator mutRef;
 var PlayerReplicationInfo ownerPRI;
 var array<AchievementPack> achievementPacks;
+
+var array<Actor> processedActors;
 
 replication {
     reliable if (Role == ROLE_Authority)
         ownerPRI;
 }
 
+function bool hasProcessed(Actor key) {
+    local int i, len;
+    len= processedActors.Length;
+
+    while(i < len) {
+        if (processedActors[i] == none) {
+            processedActors.remove(i, 1);
+            len--;
+        } else if (processedActors[i] == key) {
+            return true;
+        }
+        i++;
+    }
+    return false;
+}
+
 simulated function Tick(float DeltaTime) {
     local AchievementPack pack;
+    local MP7MHealinglProjectile projectile;
+    local int i;
 
     super.Tick(DeltaTime);
 
-    if (PlayerController(Owner) != Level.GetLocalPlayerController()) {
-        steamid64= PlayerController(Owner).GetPlayerIDHash();
-    } else {
-        steamid64= class'SAMutator'.default.localHostSteamID64;
-    }
-    if (!PlatformIsWindows()) {
-        log("Server not on Window OS.  Adding steamid64 offset (" $ steamid64 @ "+" @ offset $ ")");
-        class'Utility'.static.addOffset(steamid64, offset);
-        log("New steamid64:"@steamid64);
-    }
+    if (!initialized) {
+        if (PlayerController(Owner) != Level.GetLocalPlayerController()) {
+            steamid64= PlayerController(Owner).GetPlayerIDHash();
+        } else {
+            steamid64= class'SAMutator'.default.localHostSteamID64;
+        }
+        if (!PlatformIsWindows()) {
+            log("Server not on Window OS.  Adding steamid64 offset (" $ steamid64 @ "+" @ offset $ ")");
+            class'Utility'.static.addOffset(steamid64, offset);
+            log("New steamid64:"@steamid64);
+        }
     
-    if (Role == ROLE_Authority) {
-        mutRef.sendAchievements(self);
+        if (Role == ROLE_Authority) {
+            mutRef.sendAchievements(self);
+        }
+        foreach DynamicActors(class'AchievementPack', pack) {
+            if (pack.Owner == Owner) {
+                addAchievementPack(pack);
+            }
+        }
+        SetTimer(1.0, true);
+        initialized= true;
     }
-    foreach DynamicActors(class'AchievementPack', pack) {
-        if (pack.Owner == Owner) {
-            addAchievementPack(pack);
+    if (Role == ROLE_Authority && Owner != none && Controller(Owner).Pawn != none) {
+        foreach Controller(Owner).Pawn.TouchingActors(class'MP7MHealinglProjectile', projectile) {
+            if (!hasProcessed(projectile)) {
+                for(i= 0; i < achievementPacks.Length; i++) {
+                    achievementPacks[i].touchedHealDart(projectile);
+                }
+                processedActors[processedActors.Length]= projectile;
+            }
         }
     }
-    SetTimer(1.0, true);
-    Disable('Tick');
 }
 
 function Timer() {

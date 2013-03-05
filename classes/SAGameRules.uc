@@ -83,3 +83,20 @@ function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> dam
     }
     return true;
 }
+
+function bool OverridePickupQuery(Pawn Other, Pickup item, out byte bAllowPickup) {
+    local int i;
+    local SAReplicationInfo playerSAri;
+    local array<AchievementPack> achievementPacks;
+    local bool result;
+
+    result= super.OverridePickupQuery(Other, item, bAllowPickup);
+    if (!result || (result && bAllowPickup == 1)) {
+        playerSAri= class'SAReplicationInfo'.static.findSAri(Other.PlayerReplicationInfo);
+        playerSAri.getAchievementPacks(achievementPacks);
+        for(i= 0; i < achievementPacks.Length; i++) {
+            achievementPacks[i].pickedUpItem(item);
+        }
+    }
+    return result;
+}

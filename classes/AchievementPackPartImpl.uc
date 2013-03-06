@@ -110,7 +110,8 @@ simulated function notifyProgress(int index) {
                 usedImage= achievements[index].image;
             }
             SAInteraction(localController.Player.LocalInteractions[i]).addMessage("Achievement In Progress", 
-                achievements[index].title@";("$ achievements[index].progress $ "/" $ achievements[index].maxProgress $ ")", usedImage);
+                achievements[index].title @ class'SAInteraction'.default.newLineSeparator $ 
+                "(" $ achievements[index].progress $ "/" $ achievements[index].maxProgress $ ")", usedImage);
             break;
         }
     }
@@ -151,7 +152,7 @@ simulated function localAchievementCompleted(int index) {
                 usedImage= achievements[index].image;
             }
             SAInteraction(localController.Player.LocalInteractions[i]).addMessage("Achievement Unlocked!", 
-                packName $ ";" $ achievements[index].title, usedImage);
+                packName $ class'SAInteraction'.default.newLineSeparator $ achievements[index].title, usedImage);
             break;
         }
     }

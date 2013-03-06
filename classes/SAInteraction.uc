@@ -17,6 +17,7 @@ var float NotificationWidth, NotificationHeight, NotificationPhaseStartTime, Not
         NotificationShowTime, NotificationHideTime, NotificationHideDelay, NotificationBorderSize;
 var int NotificationPhase;
 var texture NotificationBackground;
+var string newLineSeparator;
 
 event NotifyLevelChange() {
     Master.RemoveInteraction(self);
@@ -60,7 +61,7 @@ function PostRender(Canvas canvas) {
     local float TimeElapsed;
     local float DrawHeight;
     local float IconSize, TempX, TempY, TempWidth, TempHeight;
-    local array<string> parts;
+    local array<string> parts, wrappedText;
 
     TimeElapsed= ViewportOwner.Actor.Level.TimeSeconds - NotificationPhaseStartTime;
     if (NotificationPhase == 0) { //Showing phase
@@ -128,12 +129,18 @@ function PostRender(Canvas canvas) {
     canvas.DrawText(messageQueue[0].header);
 
     // Set up next line
-    Split( messageQueue[0].body, ";", parts);
+    Split( messageQueue[0].body, "|", parts);
     for(i= 0; i < parts.Length; i++) {
         canvas.StrLen(parts[i], TempWidth, TempHeight);
         TempY += TempHeight;
         canvas.SetPos(TempX, TempY);
-        canvas.DrawText(parts[i]);
+        wrappedText.Length= 0;
+        canvas.WrapStringToArray(parts[i], wrappedText, NotificationWidth - IconSize - NotificationBorderSize * 2.0 - NotificationIconSpacing);
+        if (wrappedText.Length > 1) {
+            canvas.DrawText(Left(wrappedText[0], Len(wrappedText[0]) - 3) $ "...");
+        } else {
+            canvas.DrawText(wrappedText[0]);
+        }
     }
 }
 
@@ -150,4 +157,6 @@ defaultproperties {
     NotificationBackground= Texture'ServerAchievements.HUD.notification'
     
     achievementPanel=(ClassName="ServerAchievements.AchievementPanel",Caption="Achievements",Hint="View custom achievement progress")
+
+    newLineSeparator="|"
 }

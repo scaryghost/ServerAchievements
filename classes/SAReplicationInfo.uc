@@ -4,7 +4,7 @@
  */
 class SAReplicationInfo extends ReplicationInfo;
 
-var bool broadcastedWaveEnd, initialized;
+var bool broadcastedWaveEnd, initialized, signalReload;
 var string steamid64, offset;
 var SAMutator mutRef;
 var PlayerReplicationInfo ownerPRI;
@@ -70,6 +70,17 @@ simulated function Tick(float DeltaTime) {
                     achievementPacks[i].touchedHealDart(projectile);
                 }
                 processedActors[processedActors.Length]= projectile;
+            }
+        }
+        if (KFWeapon(Controller(Owner).Pawn.Weapon) != none) {
+            if (!signalReload && KFWeapon(Controller(Owner).Pawn.Weapon).bIsReloading) {
+                for(i= 0; i < achievementPacks.Length; i++) {
+                    achievementPacks[i].reloadedWeapon(KFWeapon(Controller(Owner).Pawn.Weapon));
+                }
+                signalReload= true;
+            } else if (signalReload && !KFWeapon(Controller(Owner).Pawn.Weapon).bIsReloading) {
+                signalReload= false;
+                PlayerController(Owner).ClientMessage("I am done reloading!");
             }
         }
     }

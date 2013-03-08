@@ -13,6 +13,7 @@ event killedMonster(Pawn target, class<DamageType> damageType, bool headshot);
 event damagedMonster(int damage, Pawn target, class<DamageType> damageType, bool headshot);
 event pickedUpItem(Pickup item);
 event touchedHealDart(MP7MHealinglProjectile healDart);
+event reloadedWeapon(KFWeapon weapon);
 
 function string serializeUserData();
 function deserializeUserData(string data);

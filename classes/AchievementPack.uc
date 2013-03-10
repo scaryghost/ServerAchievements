@@ -14,6 +14,8 @@ event damagedMonster(int damage, Pawn target, class<DamageType> damageType, bool
 event pickedUpItem(Pickup item);
 event touchedHealDart(MP7MHealinglProjectile healDart);
 event reloadedWeapon(KFWeapon weapon);
+event tossedFrag(class<Grenade> fragType);
+event firedWeapon(KFWeapon weapon);
 
 function string serializeUserData();
 function deserializeUserData(string data);

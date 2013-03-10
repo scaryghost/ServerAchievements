@@ -4,7 +4,7 @@
  */
 class SAReplicationInfo extends ReplicationInfo;
 
-var bool broadcastedWaveEnd, initialized, signalReload;
+var bool broadcastedWaveEnd, initialized, signalReload, signalToss, signalFire;
 var string steamid64, offset;
 var SAMutator mutRef;
 var PlayerReplicationInfo ownerPRI;
@@ -34,6 +34,7 @@ function bool hasProcessed(Actor key) {
 }
 
 simulated function Tick(float DeltaTime) {
+    local KFPlayerReplicationInfo kfPRI;
     local AchievementPack pack;
     local MP7MHealinglProjectile projectile;
     local int i;
@@ -80,8 +81,24 @@ simulated function Tick(float DeltaTime) {
                 signalReload= true;
             } else if (signalReload && !KFWeapon(Controller(Owner).Pawn.Weapon).bIsReloading) {
                 signalReload= false;
-                PlayerController(Owner).ClientMessage("I am done reloading!");
             }
+        }
+        if (!signalToss && KFPawn(Controller(Owner).Pawn).bThrowingNade) {
+            kfPRI= KFPlayerReplicationInfo(Controller(Owner).PlayerReplicationInfo);
+            for(i= 0; i < achievementPacks.Length; i++) {
+                achievementPacks[i].tossedFrag(kfPRI.ClientVeteranSkill.Static.GetNadeType(kfPRI));
+            }
+            signalToss= true;
+        } else if (signalToss && !KFPawn(Controller(Owner).Pawn).bThrowingNade) {
+            signalToss= false;
+        }
+        if (!signalFire && Controller(Owner).Pawn.Weapon.IsFiring()) {
+            for(i= 0; i < achievementPacks.Length; i++) {
+                achievementPacks[i].firedWeapon(KFWeapon(Controller(Owner).Pawn.Weapon));
+            }
+            signalFire= true;
+        } else if (signalFire && !Controller(Owner).Pawn.Weapon.IsFiring()) {
+            signalFire= false;
         }
     }
 }

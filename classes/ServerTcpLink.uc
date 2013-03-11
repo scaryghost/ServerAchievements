@@ -8,16 +8,33 @@ var string separator, bodySeparator;
 var string header;
 var string protocol;
 var int version;
+var int reqId;
 
 var IpAddr serverAddr;
 var string hostname;
 
+struct PendingResponse {
+    var int reqId;
+    var string request;
+    var AchievementPack achvObj;
+};
+var array<PendingResponse> pendingResponses;
+
+function sendRequest(string request, string body) {
+    pendingResponses.Length= pendingResponses.Length + 1;
+    pendingResponses[pendingResponses.Length - 1].reqId= reqId;
+    pendingResponses[pendingResponses.Length - 1].request= request;
+    
+    SendText(header $ separator $ reqId $ separator $ request $ separator $ body);
+    reqId++;
+}
+
 function PostBeginPlay() {
     LinkMode= MODE_Line;
-    ReceiveMode= RMODE_Manual;
+    ReceiveMode= RMODE_Event;
     BindPort();
     Resolve(class'SAMutator'.default.hostname);
-    header=  protocol $ "," $ version $ ",request";
+    header= protocol $ "," $ version $ ",request";
 }
 
 event Resolved(IpAddr addr) {
@@ -30,20 +47,7 @@ event Resolved(IpAddr addr) {
 }
 
 event Opened() {
-    local string response;
-    local int len;
-    local array<string> parts;
-
-    SendText(header $ separator $ "connect" $ separator $ class'SAMutator'.default.serverPassword);
-    do {
-        len= ReadText(response);
-    } until (len != 0);
-    log("Response:"@response);
-    Split(response, separator, parts);
-    if (int(parts[1]) != 0) {
-        /** TODO: Handle non zero status */
-        log("Invalid password!");
-    }
+    sendRequest("connect", class'SAMutator'.default.serverPassword);
 }
 
 event Closed() {
@@ -51,37 +55,55 @@ event Closed() {
     log("Connection to remote database closed");
 }
 
-function string getAchievementData(string steamid64, string packName) {
-    local int len;
-    local string response;
-    local array<string> parts;
+event ReceivedLine(string Line) {
+    local array<string> parts, respHeader;
+    local int i, respId;
 
-    if (IsConnected()) {
-        SendText(header $ separator $ "retrieve" $ separator $ steamid64 $ bodySeparator $ packName);
-        do {
-            len= ReadText(response);
-        } until (len != 0);
-        Split(response, separator, parts);
+    log("Response:"@Line);
+    Split(Line, separator, parts);
+    Split(parts[0], separator, respHeader);
 
-        /** TODO: check header and version */
-        return parts[2];
+    if (respHeader.Length >= 3 && respHeader[0] == protocol && int(respHeader[1]) == version) {
+        if (respHeader[2] == "response") {
+            respId= int(parts[1]);
+            for(i= 0; i < pendingResponses.Length && pendingResponses[i].reqId != respId; i++) {
+            }
+
+            if (i < pendingResponses.Length) {
+                switch (int(parts[2])) {
+                    case 0:
+                        if (pendingResponses[i].request == "retrieve") {
+                            pendingResponses[i].achvObj.deserializeUserData(parts[3]);
+                        }
+                        break;
+                    case 1:
+                        log("Invalid password!");
+                        break;
+                    case 2:
+                        log("Error saving achievement data");
+                        break;
+                    case 3:
+                        log("Error retrieving achievement data");
+                        break;
+                    default:
+                        log("Unrecognized status code="@parts[2]);
+                }
+            }
+            pendingResponses.remove(i, 1);
+        }
     }
-    return "";
+}
+
+function getAchievementData(string steamid64, AchievementPack achvObj) {
+    if (IsConnected()) {
+        sendRequest("retrieve", steamid64 $ bodySeparator $ achvObj.getPackName());
+        pendingResponses[pendingResponses.Length - 1].achvObj= achvObj;
+    }
 }
 
 function saveAchievementData(string steamid64, string packName, string data) {
-    local int len;
-    local string response;
-    local array<string> parts;
-
     if (IsConnected()) {
-        SendText(header $ separator $ "save" $ separator $ steamid64 $ bodySeparator $ packName $ bodySeparator $ data);
-        do {
-            len= ReadText(response);
-        } until (len != 0);
-        Split(response, separator, parts);
-
-        /** TODO: check header and version */
+        sendRequest("save", steamid64 $ bodySeparator $ packName $ bodySeparator $ data);
     }
 }
 

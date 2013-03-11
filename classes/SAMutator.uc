@@ -84,7 +84,7 @@ function sendAchievements(SAReplicationInfo saRI) {
         for(j= 0; j < loadedAchievementPacks.Length; j++) {
             pack= Spawn(loadedAchievementPacks[j], saRI.Owner);
             if (useRemoteDatabase && serverLink != none) {
-                pack.deserializeUserData(ServerLink.getAchievementData(saRI.steamid64, pack.getPackName()));
+                ServerLink.getAchievementData(saRI.steamid64, pack);
             } else {
                 pack.deserializeUserData(dataObj.getSerializedData(pack.getPackName()));
             }

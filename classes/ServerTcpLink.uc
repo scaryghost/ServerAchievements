@@ -4,14 +4,17 @@
  */
 class ServerTcpLink extends TcpLink;
 
-var string separator, bodySeparator;
-var string header;
-var string protocol;
-var int version;
-var int reqId;
-
+var string separator, bodySeparator, header, protocol, hostname;
+var int version, reqId;
 var IpAddr serverAddr;
-var string hostname;
+var bool isOpenned;
+
+enum StatusCode {
+    OK,
+    INVALID_PASSWORD,
+    ERROR_SAVING,
+    ERROR_RETRIEVING
+};
 
 struct PendingResponse {
     var int reqId;
@@ -21,6 +24,10 @@ struct PendingResponse {
 var array<PendingResponse> pendingResponses;
 
 function sendRequest(string request, string body) {
+    if (!isOpenned) {
+        BindPort();
+        Open(serverAddr);
+    }
     pendingResponses.Length= pendingResponses.Length + 1;
     pendingResponses[pendingResponses.Length - 1].reqId= reqId;
     pendingResponses[pendingResponses.Length - 1].request= request;
@@ -47,11 +54,13 @@ event Resolved(IpAddr addr) {
 }
 
 event Opened() {
+    isOpenned= true;
     sendRequest("connect", class'SAMutator'.default.serverPassword);
 }
 
 event Closed() {
     super.Closed();
+    isOpenned= false;
     log("Connection to remote database closed");
 }
 
@@ -71,18 +80,18 @@ event ReceivedLine(string Line) {
 
             if (i < pendingResponses.Length) {
                 switch (int(parts[2])) {
-                    case 0:
+                    case StatusCode.OK:
                         if (pendingResponses[i].request == "retrieve") {
                             pendingResponses[i].achvObj.deserializeUserData(parts[3]);
                         }
                         break;
-                    case 1:
+                    case StatusCode.INVALID_PASSWORD:
                         log("Invalid password!");
                         break;
-                    case 2:
+                    case StatusCode.ERROR_SAVING:
                         log("Error saving achievement data");
                         break;
-                    case 3:
+                    case StatusCode.ERROR_RETRIEVING:
                         log("Error retrieving achievement data");
                         break;
                     default:
@@ -95,16 +104,12 @@ event ReceivedLine(string Line) {
 }
 
 function getAchievementData(string steamid64, AchievementPack achvObj) {
-    if (IsConnected()) {
-        sendRequest("retrieve", steamid64 $ bodySeparator $ achvObj.getPackName());
-        pendingResponses[pendingResponses.Length - 1].achvObj= achvObj;
-    }
+    sendRequest("retrieve", steamid64 $ bodySeparator $ achvObj.getPackName());
+    pendingResponses[pendingResponses.Length - 1].achvObj= achvObj;
 }
 
 function saveAchievementData(string steamid64, string packName, string data) {
-    if (IsConnected()) {
-        sendRequest("save", steamid64 $ bodySeparator $ packName $ bodySeparator $ data);
-    }
+    sendRequest("save", steamid64 $ bodySeparator $ packName $ bodySeparator $ data);
 }
 
 

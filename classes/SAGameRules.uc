@@ -10,6 +10,8 @@ struct HeadHealthState {
     var bool prevHeadShot;
 };
 
+var SAMutator mutRef;
+var bool broadcastedStats;
 var array<HeadHealthState> aliveMonsters;
 
 function int NetDamage(int OriginalDamage, int Damage, pawn injured, pawn instigatedBy, 
@@ -100,3 +102,21 @@ function bool OverridePickupQuery(Pawn Other, Pickup item, out byte bAllowPickup
     }
     return result;
 }
+
+function bool CheckEndGame(PlayerReplicationInfo Winner, string Reason) {
+    local Controller C;
+
+    if (super.CheckEndGame(Winner, Reason)) {
+        if (!broadcastedStats) {
+            for(C= Level.ControllerList; C != none; C= C.NextController) {
+                if (PlayerController(C) != none) {
+                    mutRef.saveAchievementData(class'SAReplicationInfo'.static.findSAri(C.PlayerReplicationInfo));
+                }
+            }
+            broadcastedStats= true;
+        }
+        return true;
+    }
+    return false;
+}
+

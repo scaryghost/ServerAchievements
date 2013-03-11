@@ -24,6 +24,14 @@ simulated function Tick(float DeltaTime) {
     Disable('Tick');
 }
 
+function Destroyed() {
+    super.Destroyed();
+    if (serverLink != none) {
+        serverLink.Close();
+        serverLink.Destroy();
+    }
+}
+
 function PostBeginPlay() {
     local int i;
     local class<AchievementPack> loadedPack;
@@ -35,6 +43,7 @@ function PostBeginPlay() {
     AddToPackageMap();
 
     grObj= Spawn(class'SAGameRules');
+    grObj.mutRef= self;
     grObj.NextGameRules= Level.Game.GameRulesModifiers;
     Level.Game.GameRulesModifiers= grObj;
 
@@ -57,13 +66,13 @@ function PostBeginPlay() {
 
 function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
     local PlayerReplicationInfo pri;
-    local SAReplicationInfo saRI;
+    local SAReplicationInfo saRepInfo;
 
     if (PlayerReplicationInfo(Other) != none && Other.Owner != none) {
         pri= PlayerReplicationInfo(Other);
-        saRI= Spawn(class'SAReplicationInfo', pri.Owner);
-        saRI.ownerPRI= pri;
-        saRI.mutRef= Self;
+        saRepInfo= Spawn(class'SAReplicationInfo', pri.Owner);
+        saRepInfo.ownerPRI= pri;
+        saRepInfo.mutRef= Self;
     } else if (KFMonster(Other) != none) {
         grObj.aliveMonsters.Length= grObj.aliveMonsters.Length + 1;
         grObj.aliveMonsters[grObj.aliveMonsters.Length - 1].monster= KFMonster(Other);
@@ -74,37 +83,41 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
     return true;
 }
 
-function sendAchievements(SAReplicationInfo saRI) {
+function sendAchievements(SAReplicationInfo saRepInfo) {
     local int j;
     local AchievementPack pack;
     local AchievementDataObject dataObj;
 
-    if (Controller(saRI.Owner) != none && Controller(saRI.Owner).bIsPlayer) {
-        dataObj= new(None, saRI.steamid64) class'AchievementDataObject';
+    if (Controller(saRepInfo.Owner) != none && Controller(saRepInfo.Owner).bIsPlayer) {
+        dataObj= new(None, saRepInfo.steamid64) class'AchievementDataObject';
         for(j= 0; j < loadedAchievementPacks.Length; j++) {
-            pack= Spawn(loadedAchievementPacks[j], saRI.Owner);
-            if (useRemoteDatabase && serverLink != none) {
-                ServerLink.getAchievementData(saRI.steamid64, pack);
+            pack= Spawn(loadedAchievementPacks[j], saRepInfo.Owner);
+            if (useRemoteDatabase) {
+                ServerLink.getAchievementData(saRepInfo.steamid64, pack);
             } else {
                 pack.deserializeUserData(dataObj.getSerializedData(pack.getPackName()));
             }
-            saRI.addAchievementPack(pack);
+            saRepInfo.addAchievementPack(pack);
         }
     }
 }
 
 function NotifyLogout(Controller Exiting) {
-    local SAReplicationInfo saRI;
+    if (!Level.Game.bGameEnded) {
+        saveAchievementData(class'SAReplicationInfo'.static.findSAri(Exiting.PlayerReplicationInfo));
+    }
+}
+
+function saveAchievementData(SAReplicationInfo saRepInfo) {
     local array<AchievementPack> packs;
     local AchievementDataObject dataObj;
     local int i;
 
-    saRI= class'SAReplicationInfo'.static.findSAri(Exiting.PlayerReplicationInfo);
-    saRI.getAchievementPacks(packs);
-    dataObj= new(None, saRI.steamid64) class'AchievementDataObject';
+    saRepInfo.getAchievementPacks(packs);
+    dataObj= new(None, saRepInfo.steamid64) class'AchievementDataObject';
     for(i= 0; i < packs.Length; i++) {
-        if (useRemoteDatabase && serverLink != none) {
-            serverLink.saveAchievementData(saRI.steamid64, packs[i].getPackName(), packs[i].serializeUserData(true));
+        if (useRemoteDatabase) {
+            serverLink.saveAchievementData(saRepInfo.steamid64, packs[i].getPackName(), packs[i].serializeUserData(true));
         } else {
             dataObj.updateSerializedData(packs[i].getPackName(), packs[i].serializeUserData(false));
         }

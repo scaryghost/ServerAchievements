@@ -7,8 +7,7 @@ class SAMutator extends Mutator
 
 var() config bool useRemoteDatabase;
 var() config int tcpPort;
-var() config string hostname;
-var() config string localHostSteamID64;
+var() config string hostname, localHostSteamID64, serverPassword;
 var() config array<string> achievementPacks;
 
 var array<class<AchievementPack> > loadedAchievementPacks;
@@ -84,8 +83,8 @@ function sendAchievements(SAReplicationInfo saRI) {
         dataObj= new(None, saRI.steamid64) class'AchievementDataObject';
         for(j= 0; j < loadedAchievementPacks.Length; j++) {
             pack= Spawn(loadedAchievementPacks[j], saRI.Owner);
-            if (useRemoteDatabase) {
-                serverLink.getAchievementData(saRI.steamid64, pack.getPackName(), pack);
+            if (useRemoteDatabase && serverLink != none) {
+                pack.deserializeUserData(ServerLink.getAchievementData(saRI.steamid64, pack.getPackName()));
             } else {
                 pack.deserializeUserData(dataObj.getSerializedData(pack.getPackName()));
             }
@@ -104,10 +103,10 @@ function NotifyLogout(Controller Exiting) {
     saRI.getAchievementPacks(packs);
     dataObj= new(None, saRI.steamid64) class'AchievementDataObject';
     for(i= 0; i < packs.Length; i++) {
-        if (useRemoteDatabase) {
-            serverLink.saveAchievementData(saRI.steamid64, packs[i].getPackName(), packs[i]);
+        if (useRemoteDatabase && serverLink != none) {
+            serverLink.saveAchievementData(saRI.steamid64, packs[i].getPackName(), packs[i].serializeUserData(true));
         } else {
-            dataObj.updateSerializedData(packs[i].getPackName(), packs[i].serializeUserData());
+            dataObj.updateSerializedData(packs[i].getPackName(), packs[i].serializeUserData(false));
         }
     }
     if (!useRemoteDatabase) {
@@ -120,8 +119,9 @@ static function FillPlayInfo(PlayInfo PlayInfo) {
     PlayInfo.AddSetting("ServerAchievements", "useRemoteDatabase", "Use Remote Database", 0, 0, "Check",,,, true);
     PlayInfo.AddSetting("ServerAchievements", "hostname", "Remote Server Address", 0, 0, "Text", "128",,, true);
     PlayInfo.AddSetting("ServerAchievements", "tcpPort", "Remote Server Port", 0, 0, "Text",,,, true);
+    PlayInfo.AddSetting("ServerAchievements", "serverPassword", "Remote Server Password", 0, 0, "Text", "128",,, true);
     PlayInfo.AddSetting("ServerAchievements", "localHostSteamID64", "Local Host SteamID64", 0, 0, "Text", "128");
-    PlayInfo.AddSetting("ServerAchievements", "achievementPacks", "Achievement Packs", 1, 1, "Text", "42",,,);
+    PlayInfo.AddSetting("ServerAchievements", "achievementPacks", "Achievement Packs", 1, 1, "Text", "128",,,);
 }
 
 
@@ -137,6 +137,8 @@ static event string GetDescriptionText(string property) {
             return "Host name of the remote server";
         case "tcpPort":
             return "TCP Port number of the remote server";
+        case "serverPassword":
+            return "Password to connect to the remote database";
         default:
             return Super.GetDescriptionText(property);
     }

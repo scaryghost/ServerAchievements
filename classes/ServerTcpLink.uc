@@ -34,10 +34,11 @@ event Opened() {
     local int len;
     local array<string> parts;
 
-    SendText(header $ separator $ "connect" $ separator $ "password");
+    SendText(header $ separator $ "connect" $ separator $ class'SAMutator'.default.serverPassword);
     do {
         len= ReadText(response);
     } until (len != 0);
+    log("Response:"@response);
     Split(response, separator, parts);
     if (int(parts[1]) != 0) {
         /** TODO: Handle non zero status */
@@ -45,7 +46,12 @@ event Opened() {
     }
 }
 
-function getAchievementData(string steamid64, string packName, out AchievementPack obj) {
+event Closed() {
+    super.Closed();
+    log("Connection to remote database closed");
+}
+
+function string getAchievementData(string steamid64, string packName) {
     local int len;
     local string response;
     local array<string> parts;
@@ -58,17 +64,18 @@ function getAchievementData(string steamid64, string packName, out AchievementPa
         Split(response, separator, parts);
 
         /** TODO: check header and version */
-        obj.deserializeUserData(parts[2]);
+        return parts[2];
     }
+    return "";
 }
 
-function saveAchievementData(string steamid64, string packName, AchievementPack obj) {
+function saveAchievementData(string steamid64, string packName, string data) {
     local int len;
     local string response;
     local array<string> parts;
 
     if (IsConnected()) {
-        SendText(header $ separator $ "save" $ separator $ steamid64 $ bodySeparator $ packName $ bodySeparator $ obj.serializeUserData());
+        SendText(header $ separator $ "save" $ separator $ steamid64 $ bodySeparator $ packName $ bodySeparator $ data);
         do {
             len= ReadText(response);
         } until (len != 0);

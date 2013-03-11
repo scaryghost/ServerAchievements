@@ -17,7 +17,7 @@ event reloadedWeapon(KFWeapon weapon);
 event tossedFrag(class<Grenade> fragType);
 event firedWeapon(KFWeapon weapon);
 
-function string serializeUserData();
+function string serializeUserData(optional bool modified);
 function deserializeUserData(string data);
 simulated function fillAchievementInfo(int index, out string title, out string description, out Texture image, 
     out int maxProgress, out int progress, out byte completed);

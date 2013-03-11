@@ -61,7 +61,7 @@ event ReceivedLine(string Line) {
 
     log("Response:"@Line);
     Split(Line, separator, parts);
-    Split(parts[0], separator, respHeader);
+    Split(parts[0], ",", respHeader);
 
     if (respHeader.Length >= 3 && respHeader[0] == protocol && int(respHeader[1]) == version) {
         if (respHeader[2] == "response") {

@@ -4,7 +4,7 @@
  */
 class ServerTcpLink extends TcpLink;
 
-var string separator;
+var string separator, bodySeparator;
 var string header;
 var string protocol;
 var int version;
@@ -17,7 +17,7 @@ function PostBeginPlay() {
     ReceiveMode= RMODE_Manual;
     BindPort();
     Resolve(class'SAMutator'.default.hostname);
-    header=  protocol $ "-" $ version $ "-request";
+    header=  protocol $ "," $ version $ ",request";
 }
 
 event Resolved(IpAddr addr) {
@@ -51,7 +51,7 @@ function getAchievementData(string steamid64, string packName, out AchievementPa
     local array<string> parts;
 
     if (IsConnected()) {
-        SendText(header $ separator $ "retrieve" $ separator $ steamid64 $ "," $ packName);
+        SendText(header $ separator $ "retrieve" $ separator $ steamid64 $ bodySeparator $ packName);
         do {
             len= ReadText(response);
         } until (len != 0);
@@ -68,7 +68,7 @@ function saveAchievementData(string steamid64, string packName, AchievementPack 
     local array<string> parts;
 
     if (IsConnected()) {
-        SendText(header $ separator $ "save" $ separator $ steamid64 $ "," $ packName $ "," $ obj.serializeUserData());
+        SendText(header $ separator $ "save" $ separator $ steamid64 $ bodySeparator $ packName $ bodySeparator $ obj.serializeUserData());
         do {
             len= ReadText(response);
         } until (len != 0);
@@ -81,6 +81,7 @@ function saveAchievementData(string steamid64, string packName, AchievementPack 
 
 defaultproperties {
     separator= "|"
+    bodySeparator= "."
     protocol= "server-achievements"
     version= 1
 }

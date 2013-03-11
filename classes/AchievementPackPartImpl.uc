@@ -18,11 +18,11 @@ struct Achievement {
     var byte completed;
 
     var byte timesNotified;
+    var bool modified;
 };
 
 var PlayerController localController;
 var array<Achievement> achievements;
-var bool dataModified;
 var string packName;
 var Texture defaultAchievementImage;
 
@@ -32,14 +32,17 @@ replication {
 }
 
 function string serializeUserData() {
-    local int i;
+    local int i, numModified;
     local string data;
 
     for(i= 0; i < achievements.Length; i++) {
-        if (i != 0) {
-            data$= ";";
+        if (achievements[i].modified) {
+            if (numModified != 0) {
+                data$= ";";
+            }
+            data$= i $ "," $ achievements[i].completed $ "," $ achievements[i].progress;
+            numModified++;
         }
-        data$= i $ "," $ achievements[i].completed $ "," $ achievements[i].progress;
     }
     return data;
 }
@@ -121,7 +124,7 @@ function achievementCompleted(int index) {
     if (achievements[index].completed == 0) {
         achievements[index].completed= 1;
         flushToClient(index, achievements[index].progress, achievements[index].completed);
-        dataModified= true;
+        achievements[index].modified= true;
         localAchievementCompleted(index);
     }
 }
@@ -137,7 +140,7 @@ function addProgress(int index, int offset) {
             achievements[index].timesNotified++;
         }
     }
-    dataModified= true;
+    achievements[index].modified= true;
 }
 
 simulated function localAchievementCompleted(int index) {

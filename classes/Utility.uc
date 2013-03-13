@@ -39,3 +39,33 @@ static function int getIntValue(string num, int index) {
     }
     return int(Mid(num, index, 1));
 }
+
+static function uniqueInsert(out array<string> list, string key) {
+    local int index, low, high, mid;
+
+    if (list.Length == 0) {
+        list[list.Length]= key;
+        return;
+    }
+
+    low= 0;
+    high= list.Length - 1;
+    index= -1;
+    mid= -1;
+
+    while(low <= high) {
+        mid= (low+high)/2;
+        if (list[mid] < key) {
+            low= mid + 1;
+        } else if (list[mid] > key) {
+            high= mid - 1;
+        } else {
+            index= mid;
+            break;
+        }
+    }
+    if (low > high) {
+        list.Insert(low, 1);
+        list[low]= key;
+    }
+}

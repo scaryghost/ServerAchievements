@@ -35,6 +35,7 @@ function Destroyed() {
 function PostBeginPlay() {
     local int i;
     local class<AchievementPack> loadedPack;
+    local array<string> uniquePacks, packageNames;
 
     if (KFGameType(Level.Game) == none) {
         Destroy();
@@ -49,16 +50,22 @@ function PostBeginPlay() {
 
     log("Attempting to load"@achievementPacks.Length@"achievement packs");
     for(i= 0; i < achievementPacks.Length; i++) {
-        loadedPack= class<AchievementPack>(DynamicLoadObject(achievementPacks[i], class'Class'));
+        class'Utility'.static.uniqueInsert(uniquePacks, achievementPacks[i]);
+    }
+    for(i= 0; i < uniquePacks.Length; i++) {
+        loadedPack= class<AchievementPack>(DynamicLoadObject(uniquePacks[i], class'Class'));
         if (loadedPack == none) {
-            Warn("Failed to load achievement pack"@achievementPacks[i]);
+            Warn("Failed to load achievement pack"@uniquePacks[i]);
         } else {
-            log("Successfully loaded"@achievementPacks[i]);
+            log("Successfully loaded"@uniquePacks[i]);
             loadedAchievementPacks[loadedAchievementPacks.Length]= loadedPack;
-            AddToPackageMap(string(loadedPack.Outer.name));
+            class'Utility'.static.uniqueInsert(packageNames, string(loadedPack.Outer.name));
         }
     }
-    log("Successfully loaded"@loadedAchievementPacks.Length@"achievement packs");
+    for(i= 0; i < packageNames.Length; i++) {
+        AddToPackageMap(packageNames[i]);
+    }
+    log("Successfully loaded"@loadedAchievementPacks.Length@"achievement packs.  Added"@packageNames.Length@"package names to the package map");
     if (useRemoteDatabase) {
         serverLink= spawn(class'ServerTcpLink');
     }

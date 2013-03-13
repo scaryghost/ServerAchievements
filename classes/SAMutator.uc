@@ -117,9 +117,9 @@ function saveAchievementData(SAReplicationInfo saRepInfo) {
     dataObj= new(None, saRepInfo.steamid64) class'AchievementDataObject';
     for(i= 0; i < packs.Length; i++) {
         if (useRemoteDatabase) {
-            serverLink.saveAchievementData(saRepInfo.steamid64, packs[i].getPackName(), packs[i].serializeUserData(true));
+            serverLink.saveAchievementData(saRepInfo.steamid64, packs[i].getPackName(), packs[i].serializeUserData());
         } else {
-            dataObj.updateSerializedData(packs[i].getPackName(), packs[i].serializeUserData(false));
+            dataObj.updateSerializedData(packs[i].getPackName(), packs[i].serializeUserData());
         }
     }
     if (!useRemoteDatabase) {

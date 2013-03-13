@@ -31,17 +31,17 @@ replication {
         localAchievementCompleted, notifyProgress, flushToClient;
 }
 
-function string serializeUserData(optional bool modified) {
-    local int i, numModified;
+function string serializeUserData() {
+    local int i, serializedElems;
     local string data;
 
     for(i= 0; i < achievements.Length; i++) {
-        if ((modified && achievements[i].modified) || !modified) {
-            if (numModified != 0) {
+        if (achievements[i].completed != 0 || (achievements[i].completed == 0 && achievements[i].progress != 0)) {
+            if (serializedElems != 0) {
                 data$= ";";
             }
             data$= i $ "," $ achievements[i].completed $ "," $ achievements[i].progress;
-            numModified++;
+            serializedElems++;
         }
     }
     return data;

@@ -19,6 +19,7 @@ enum StatusCode {
 struct PendingResponse {
     var int reqId;
     var string request;
+    var string steamid64;
     var AchievementPack achvObj;
 };
 var array<PendingResponse> pendingResponses;
@@ -65,6 +66,7 @@ event Closed() {
 }
 
 event ReceivedLine(string Line) {
+    local AchievementDataObject dataObj;
     local array<string> parts, respHeader;
     local int i, respId;
 
@@ -82,7 +84,12 @@ event ReceivedLine(string Line) {
                 switch (int(parts[2])) {
                     case StatusCode.OK:
                         if (pendingResponses[i].request == "retrieve") {
-                            pendingResponses[i].achvObj.deserializeUserData(parts[3]);
+                            if (parts.Length >= 4) {
+                                pendingResponses[i].achvObj.deserializeUserData(parts[3]);
+                            } else {
+                                dataObj= new(None, pendingResponses[i].steamid64) class'AchievementDataObject';
+                                pendingResponses[i].achvObj.deserializeUserData(dataObj.getSerializedData(pendingResponses[i].achvObj.getPackName()));
+                            }
                         }
                         break;
                     case StatusCode.INVALID_PASSWORD:
@@ -105,6 +112,7 @@ event ReceivedLine(string Line) {
 
 function getAchievementData(string steamid64, AchievementPack achvObj) {
     sendRequest("retrieve", steamid64 $ bodySeparator $ achvObj.getPackName());
+    pendingResponses[pendingResponses.Length - 1].steamid64= steamid64;
     pendingResponses[pendingResponses.Length - 1].achvObj= achvObj;
 }
 

@@ -117,7 +117,13 @@ function getAchievementData(string steamid64, AchievementPack achvObj) {
 }
 
 function saveAchievementData(string steamid64, string packName, string data) {
-    sendRequest("save", steamid64 $ bodySeparator $ packName $ bodySeparator $ data);
+    local string body;
+
+    body= steamid64 $ bodySeparator $ packName;
+    if (Len(data) > 0) {
+        body$= bodySeparator $ data;
+    }
+    sendRequest("save",  body);
 }
 
 

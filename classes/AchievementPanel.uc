@@ -5,8 +5,24 @@
 class AchievementPanel extends KFGui.KFTab_MidGameVoiceChat;
 
 var automated GUISectionBackground panelBg;
+var automated GUIProgressBar progressBar;
 var automated moComboBox packNames;
 var automated AchievementListBox achvSelect;
+
+function updateProgressBar() {
+    progressBar.Value= achvSelect.listObj.selectedPack.getNumCompleted();
+    progressBar.High= achvSelect.listObj.selectedPack.numAchievements();
+    progressBar.Caption= int(progressBar.Value) $ "/" $ int(progressBar.High);
+    progressBar.CaptionWidth= Len(ProgressBar.Caption) * 20;
+}
+
+function ShowPanel(bool bShow){
+    if (bShow) {
+        updateProgressBar();
+    }
+
+    super.ShowPanel(bShow);
+}
 
 function InitComponent(GUIController MyController, GUIComponent MyOwner) {
     packNames.OnChange= InternalOnChange;
@@ -23,6 +39,7 @@ function InternalOnChange(GUIComponent sender) {
         ownerSAri= class'SAReplicationInfo'.static.findSAri(PlayerOwner().PlayerReplicationInfo);
         ownerSAri.getAchievementPacks(packs);
         achvSelect.listObj.setAchievementPack(packs[packNames.GetIndex()]);
+        updateProgressBar();
     }
 }
 
@@ -80,10 +97,26 @@ defaultproperties {
     panelBg=GUISectionBackground'ServerAchievements.AchievementPanel.BGStats'
 
     Begin Object Class=AchievementListBox Name=listBox
-        WinTop=0.090760
+        WinTop=0.130760
         WinLeft=0.019240
         WinWidth=0.97
-        WinHeight=0.75
+        WinHeight=0.725
     End Object
     achvSelect=AchievementListBox'ServerAchievements.AchievementPanel.listBox'
+
+    Begin Object class=GUIProgressBar Name=AchievementProgressBar
+        BarColor=(R=255,G=255,B=255,A=255)
+        Value=0.0
+        WinWidth=0.655610
+        WinHeight=0.030000
+        WinLeft=0.180867
+        WinTop=0.090000
+        RenderWeight=1.2
+        BarBack=Texture'KF_InterfaceArt_tex.Menu.Innerborder'
+        BarTop=Texture'InterfaceArt_tex.Menu.progress_bar'
+        CaptionWidth=0
+        bShowValue=false
+        BorderSize=3.0
+    End Object
+    progressBar=AchievementProgressBar
 }

@@ -22,6 +22,7 @@ function deserializeUserData(string data);
 simulated function fillAchievementInfo(int index, out string title, out string description, out Texture image, 
     out int maxProgress, out int progress, out byte completed);
 simulated function int numAchievements();
+simulated function int getNumCompleted();
 simulated function string getPackName();
 
 defaultproperties {

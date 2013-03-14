@@ -86,6 +86,17 @@ simulated function int numAchievements() {
     return achievements.Length;
 }
 
+simulated function int getNumCompleted() {
+    local int i, numCompleted;
+
+    for(i= 0; i < achievements.Length; i++) {
+        if (achievements[i].completed != 0) {
+            numCompleted++;
+        }
+    }
+    return numCompleted;
+}
+
 simulated function string getPackName() {
     return packName;
 }

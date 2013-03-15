@@ -61,7 +61,7 @@ function deserializeUserData(string data) {
                 achievements[j].progress= int(achvData[2]);
                 flushToClient(j, achievements[j].progress, achievements[j].completed);
                 if (achievements[j].completed == 0 && achievements[j].maxProgress != 0) {
-                    achievements[j].timesNotified= int((achievements[j].progress/achievements[j].maxProgress)/achievements[j].notifyIncrement);
+                    achievements[j].timesNotified= int(float(achievements[j].progress)/achievements[j].maxProgress/achievements[j].notifyIncrement);
                 }
             }
         }

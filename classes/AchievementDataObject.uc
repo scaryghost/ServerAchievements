@@ -28,13 +28,15 @@ function string getSerializedData(string packName) {
 function updateSerializedData(string packName, string data) {
     local int i;
 
-    for(i= 0; i < achievementData.Length; i++) {
-        if (achievementData[i].packName == packName) {
-            achievementData[i].serializedData= data;
-            return;
+    if (Len(data) > 0) {
+        for(i= 0; i < achievementData.Length; i++) {
+            if (achievementData[i].packName == packName) {
+                achievementData[i].serializedData= data;
+                return;
+            }
         }
+        achievementData.Length= achievementData.Length + 1;
+        achievementData[achievementData.Length - 1].packName= packName;
+        achievementData[achievementData.Length - 1].serializedData= data;
     }
-    achievementData.Length= achievementData.Length + 1;
-    achievementData[achievementData.Length - 1].packName= packName;
-    achievementData[achievementData.Length - 1].serializedData= data;
 }

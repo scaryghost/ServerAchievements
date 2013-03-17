@@ -122,8 +122,8 @@ function saveAchievementData(string steamid64, string packName, string data) {
     body= steamid64 $ bodySeparator $ packName;
     if (Len(data) > 0) {
         body$= bodySeparator $ data;
+        sendRequest("save",  body);
     }
-    sendRequest("save",  body);
 }
 
 

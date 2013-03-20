@@ -1,7 +1,7 @@
 Server Achievements
 ===============
 ## Version
-1.1
+1.1.1
 
 ## About
 This package contains the infrastructure for creating custom achievements for Killing Floor.  By hooking into the game, 

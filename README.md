@@ -1,7 +1,10 @@
 Server Achievements
 ===============
 ## Version
-1.1.1
+1.1.2
+
+## Release Notes
+https://github.com/scaryghost/ServerAchievements/wiki/Release-ServerAchievements-1.1.2
 
 ## About
 This package contains the infrastructure for creating custom achievements for Killing Floor.  By hooking into the game, 

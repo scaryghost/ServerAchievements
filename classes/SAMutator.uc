@@ -44,7 +44,6 @@ function PostBeginPlay() {
     AddToPackageMap();
 
     grObj= Spawn(class'SAGameRules');
-    grObj.mutRef= self;
     grObj.NextGameRules= Level.Game.GameRulesModifiers;
     Level.Game.GameRulesModifiers= grObj;
 
@@ -166,7 +165,7 @@ static event string GetDescriptionText(string property) {
 
 defaultproperties {
     GroupName="KFServerAchievements"
-    FriendlyName="Server Achievements v1.1.1"
+    FriendlyName="Server Achievements v1.1.2"
     Description="Loads custom achievements into the game"
 
     RemoteRole= ROLE_SimulatedProxy

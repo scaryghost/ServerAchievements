@@ -106,7 +106,7 @@ simulated function Tick(float DeltaTime) {
 function Timer() {
     local int realWaveNum;
     local int i;
-    local bool eventTriggered;
+    local bool eventTriggered, gameEnded;
 
     for(i= 0; i < achievementPacks.Length && (eventTriggered || i == 0); i++) {
         if (!broadcastedWaveEnd && !KFGameType(Level.Game).bWaveInProgress) {
@@ -126,11 +126,15 @@ function Timer() {
             achievementPacks[i].matchEnd(class'KFGameType'.static.GetCurrentMapName(Level), Level.Game.GameDifficulty, 
                 KFGameType(Level.Game).KFGameLength, KFGameReplicationInfo(Level.Game.GameReplicationInfo).EndGameType, realWaveNum);
             eventTriggered= true;
+            gameEnded= true;
             SetTimer(0, false);
         }
     }
     if (eventTriggered) {
         broadcastedWaveEnd= !broadcastedWaveEnd;
+    }
+    if (gameEnded) {
+        mutRef.saveAchievementData(self);
     }
 }
 

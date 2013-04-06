@@ -8,8 +8,8 @@ class AchievementPackPartImpl extends AchievementPack
     abstract;
 
 struct Achievement {
-    var string title;
-    var string description;
+    var localized string title;
+    var localized string description;
     var Texture image;
     var int maxProgress;
     var float notifyIncrement;
@@ -23,7 +23,7 @@ struct Achievement {
 
 var PlayerController localController;
 var array<Achievement> achievements;
-var string packName;
+var localized string packName;
 var Texture defaultAchievementImage;
 
 replication {

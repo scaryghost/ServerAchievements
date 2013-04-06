@@ -1,10 +1,10 @@
 Server Achievements
 ===============
 ## Version
-1.1.2
+1.1.3
 
 ## Release Notes
-https://github.com/scaryghost/ServerAchievements/wiki/Release-ServerAchievements-1.1.2
+https://github.com/scaryghost/ServerAchievements/wiki/Release-ServerAchievements-1.1.3
 
 ## About
 This package contains the infrastructure for creating custom achievements for Killing Floor.  By hooking into the game, 
@@ -28,6 +28,10 @@ The mutator can be configured by editting the ServerAchievements.ini file.  Belo
 Alternatively, the webadmin page and in-game mutator configuration menu can be used to change the mutator settings.  If 
 configured from in game, the last 4 properties are only visible if the "View Advanced Options" box is checked
 
+## Localization
+Localization for the achievement panel and mutator text is provided in the ServerAchievements.int file.  Change the 
+extension to your desired language region and edit the file to translate the mutator text.
+
 ## Creating Custom Achievements
 Please see the wiki for a guide on creating custom achievement packs based on the ServerAchievements engine.  
 https://github.com/scaryghost/ServerAchievements/wiki/Creating-Custom-Achievements
@@ -36,5 +40,7 @@ https://github.com/scaryghost/ServerAchievements/wiki/Creating-Custom-Achievemen
 https://github.com/scaryghost/ServerAchievements
 
 ## Acknowledgements
+    Marco             - ServerPerks helped me to setup the per object ocnfiguration
+    TWI               - Providing code to create the popup notification
     Checkmark image   - http://www.freepik.com/free-vector/green-checkmark-and-red-minus_518315.htm
     Notification bgnd - http://xdotnano.wordpress.com/apparition2/

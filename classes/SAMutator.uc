@@ -165,7 +165,7 @@ static event string GetDescriptionText(string property) {
 
 defaultproperties {
     GroupName="KFServerAchievements"
-    FriendlyName="Server Achievements v1.1.2"
+    FriendlyName="Server Achievements v1.1.3"
     Description="Loads custom achievements into the game"
 
     RemoteRole= ROLE_SimulatedProxy

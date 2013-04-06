@@ -92,12 +92,12 @@ simulated function Tick(float DeltaTime) {
         } else if (signalToss && !KFPawn(Controller(Owner).Pawn).bThrowingNade) {
             signalToss= false;
         }
-        if (!signalFire && Controller(Owner).Pawn.Weapon.IsFiring()) {
+        if (!signalFire && Controller(Owner).Pawn.Weapon != none && Controller(Owner).Pawn.Weapon.IsFiring()) {
             for(i= 0; i < achievementPacks.Length; i++) {
                 achievementPacks[i].firedWeapon(KFWeapon(Controller(Owner).Pawn.Weapon));
             }
             signalFire= true;
-        } else if (signalFire && !Controller(Owner).Pawn.Weapon.IsFiring()) {
+        } else if (signalFire && Controller(Owner).Pawn.Weapon != none && !Controller(Owner).Pawn.Weapon.IsFiring()) {
             signalFire= false;
         }
     }

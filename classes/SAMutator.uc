@@ -73,6 +73,8 @@ function PostBeginPlay() {
 function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
     local PlayerReplicationInfo pri;
     local SAReplicationInfo saRepInfo;
+    local array<AchievementPack> packs;
+    local int i;
 
     if (PlayerReplicationInfo(Other) != none && Other.Owner != none) {
         pri= PlayerReplicationInfo(Other);
@@ -84,6 +86,12 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
         grObj.aliveMonsters[grObj.aliveMonsters.Length - 1].monster= KFMonster(Other);
         grObj.aliveMonsters[grObj.aliveMonsters.Length - 1].prevHeadHealth= KFMonster(Other).default.HeadHealth * 
             KFMonster(Other).DifficultyHeadHealthModifer() * KFMonster(Other).NumPlayersHeadHealthModifer();
+    } else if (KFWeaponPickup(Other) != none) {
+        saRepInfo= class'SAReplicationInfo'.static.findSAri(KFWeaponPickup(Other).DroppedBy.PlayerReplicationInfo);
+        saRepInfo.getAchievementPacks(packs);
+        for(i= 0; i < packs.Length; i++) {
+            packs[i].droppedWeapon(KFWeaponPickup(Other));
+        }
     }
 
     return true;

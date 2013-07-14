@@ -12,7 +12,7 @@ event playerDied(Controller killer, class<DamageType> damageType, int waveNum);
 event killedMonster(Pawn target, class<DamageType> damageType, bool headshot);
 event damagedMonster(int damage, Pawn target, class<DamageType> damageType, bool headshot);
 event pickedUpItem(Pickup item);
-event touchedHealDart(MP7MHealinglProjectile healDart);
+event touchedHealDart(HealingProjectile healDart);
 event reloadedWeapon(KFWeapon weapon);
 event tossedFrag(class<Grenade> fragType);
 event firedWeapon(KFWeapon weapon);

@@ -37,7 +37,7 @@ function bool hasProcessed(Actor key) {
 simulated function Tick(float DeltaTime) {
     local KFPlayerReplicationInfo kfPRI;
     local AchievementPack pack;
-    local MP7MHealinglProjectile projectile;
+    local HealingProjectile projectile;
     local int i;
 
     super.Tick(DeltaTime);
@@ -67,7 +67,7 @@ simulated function Tick(float DeltaTime) {
         initialized= true;
     }
     if (Role == ROLE_Authority && Owner != none && Controller(Owner).Pawn != none) {
-        foreach Controller(Owner).Pawn.TouchingActors(class'MP7MHealinglProjectile', projectile) {
+        foreach Controller(Owner).Pawn.TouchingActors(class'HealingProjectile', projectile) {
             if (!hasProcessed(projectile)) {
                 for(i= 0; i < achievementPacks.Length; i++) {
                     achievementPacks[i].touchedHealDart(projectile);

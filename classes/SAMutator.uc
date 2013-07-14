@@ -86,7 +86,7 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
         grObj.aliveMonsters[grObj.aliveMonsters.Length - 1].monster= KFMonster(Other);
         grObj.aliveMonsters[grObj.aliveMonsters.Length - 1].prevHeadHealth= KFMonster(Other).default.HeadHealth * 
             KFMonster(Other).DifficultyHeadHealthModifer() * KFMonster(Other).NumPlayersHeadHealthModifer();
-    } else if (KFWeaponPickup(Other) != none) {
+    } else if (KFWeaponPickup(Other) != none && KFWeaponPickup(Other).Instigator != none) {
         saRepInfo= class'SAReplicationInfo'.static.findSAri(KFWeaponPickup(Other).Instigator.PlayerReplicationInfo);
         saRepInfo.getAchievementPacks(packs);
         for(i= 0; i < packs.Length; i++) {

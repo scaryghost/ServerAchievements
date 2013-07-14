@@ -17,6 +17,7 @@ event reloadedWeapon(KFWeapon weapon);
 event tossedFrag(class<Grenade> fragType);
 event firedWeapon(KFWeapon weapon);
 event droppedWeapon(KFWeaponPickup weaponPickup);
+event objectiveChanged(KF_StoryObjective newObjective);
 
 function string serializeUserData();
 function deserializeUserData(string data);

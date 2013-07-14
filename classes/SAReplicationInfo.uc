@@ -4,11 +4,12 @@
  */
 class SAReplicationInfo extends ReplicationInfo;
 
-var bool broadcastedWaveEnd, initialized, signalReload, signalToss, signalFire;
+var bool broadcastedWaveEnd, initialized, signalReload, signalToss, signalFire, objectiveMode;
 var string steamid64, offset;
 var SAMutator mutRef;
 var PlayerReplicationInfo ownerPRI;
 var array<AchievementPack> achievementPacks;
+var KF_StoryObjective storedObjective;
 
 var array<Actor> processedActors;
 
@@ -61,6 +62,7 @@ simulated function Tick(float DeltaTime) {
                 addAchievementPack(pack);
             }
         }
+        objectiveMode= KFStoryGameInfo(Level.Game) != none;
         SetTimer(1.0, true);
         initialized= true;
     }
@@ -103,11 +105,27 @@ simulated function Tick(float DeltaTime) {
     }
 }
 
+function checkCurrentObjective() {
+    local KF_StoryObjective currentObjective;
+    local int i;
+
+    currentObjective= KF_StoryGRI(Level.Game.GameReplicationInfo).GetCurrentObjective();
+    if (storedObjective != currentObjective) {
+        storedObjective= currentObjective;
+        for(i= 0; i < achievementPacks.Length; i++) {
+            achievementPacks[i].objectiveChanged(currentObjective);
+        }
+    }
+}
+
 function Timer() {
     local int realWaveNum;
     local int i;
     local bool eventTriggered, gameEnded;
 
+    if (objectiveMode) {
+        checkCurrentObjective();
+    }
     for(i= 0; i < achievementPacks.Length && (eventTriggered || i == 0); i++) {
         if (!broadcastedWaveEnd && !KFGameType(Level.Game).bWaveInProgress) {
             achievementPacks[i].waveEnd(KFGameType(Level.Game).WaveNum);

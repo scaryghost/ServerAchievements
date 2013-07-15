@@ -62,10 +62,10 @@ function DrawAchievement(Canvas Canvas, int Index, float X, float Y, float Width
     //Draw the Display Name
     SectionStyle.DrawText(Canvas, MSAT_Blurry, TempX, TempY, Width - TempX, TextHeight * Height, TXTA_Left, title, FNS_Medium);
 
-    //Draw the Description
-    SectionStyle.DrawText(Canvas, MSAT_Blurry, TempX, TempY + (TextHeight * Height) + (NameToDescriptionSpacing * Height), Width - TempX, TextHeight * Height, TXTA_Left, description, FNS_Small);
-
     if (maxProgress != 0) {
+        //Draw the Description
+        SectionStyle.DrawText(Canvas, MSAT_Blurry, TempX, TempY + (TextHeight * Height) + (NameToDescriptionSpacing * Height), Width - TempX - (ProgressBarWidth * Width), TextHeight * Height, TXTA_Left, description, FNS_Small);
+
         TempX = X + Width - (OuterBorder * Width) - (ItemBorder * Height * 2.0) - (ProgressBarWidth * Width);
         TempY = Y + (Height / 2.0) - (ProgressBarHeight * Height / 2.0);
 
@@ -84,6 +84,9 @@ function DrawAchievement(Canvas Canvas, int Index, float X, float Y, float Width
 
         // Draw Progress Text
         SectionStyle.DrawText(Canvas, MSAT_Blurry, TempX - 150 - (ProgressTextSpacing * Width), TempY, 150, (TextHeight * Height), TXTA_Right, ProgressString, FNS_Medium);
+    } else {
+        //Draw the Description
+        SectionStyle.DrawText(Canvas, MSAT_Blurry, TempX, TempY + (TextHeight * Height) + (NameToDescriptionSpacing * Height), Width, TextHeight * Height, TXTA_Left, description, FNS_Small);
     }
 }
 

@@ -129,13 +129,15 @@ function PostRender(Canvas canvas) {
     canvas.DrawText(messageQueue[0].header);
 
     // Set up next line
-    Split( messageQueue[0].body, "|", parts);
+    Split( messageQueue[0].body, default.newLineSeparator, parts);
     for(i= 0; i < parts.Length; i++) {
         canvas.StrLen(parts[i], TempWidth, TempHeight);
         TempY += TempHeight;
         canvas.SetPos(TempX, TempY);
         wrappedText.Length= 0;
+        parts[i]= Repl(parts[i], " ", "_");
         canvas.WrapStringToArray(parts[i], wrappedText, NotificationWidth - IconSize - NotificationBorderSize * 2.0 - NotificationIconSpacing);
+        wrappedText[0]= Repl(wrappedText[0], "_", " ");
         if (wrappedText.Length > 1) {
             canvas.DrawText(Left(wrappedText[0], Len(wrappedText[0]) - 3) $ "...");
         } else {

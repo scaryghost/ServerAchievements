@@ -17,28 +17,39 @@ function int NetDamage(int OriginalDamage, int Damage, pawn injured, pawn instig
         vector HitLocation, out vector Momentum, class<DamageType> DamageType) {
     local int newDamage, i;
     local bool headShot;
-    local SAReplicationInfo instigatorSAri;
+    local SAReplicationInfo saRepInfo;
     local array<AchievementPack> achievementPacks;
 
-    for(i= 0; i < aliveMonsters.Length; i++) {
-        if (aliveMonsters[i].monster == injured) {
-            if (aliveMonsters[i].prevHeadHealth > KFMonster(injured).HeadHealth) {
-                aliveMonsters[i].prevHeadHealth= KFMonster(injured).HeadHealth;
-                aliveMonsters[i].prevHeadShot= true;
-                headShot= true;
-            } else {
-                aliveMonsters[i].prevHeadShot= false;
-            }
-            break;
-        }
-    }
     newDamage= super.NetDamage(OriginalDamage, Damage, injured, instigatedBy, HitLocation, Momentum, DamageType);
 
-    instigatorSAri= class'SAReplicationInfo'.static.findSAri(instigatedBy.PlayerReplicationInfo);
-    if (instigatorSAri != none && KFMonster(injured) != none) {
-        instigatorSAri.getAchievementPacks(achievementPacks);
-        for(i= 0; i < achievementPacks.Length; i++) {
-            achievementPacks[i].damagedMonster(newDamage, injured, DamageType, headShot);
+    if (KFPawn(injured) != none) {
+        saRepInfo= class'SAReplicationInfo'.static.findSAri(injured.PlayerReplicationInfo);
+        if (saRepInfo != none) {
+            saRepInfo.getAchievementPacks(achievementPacks);
+            for(i= 0; i < achievementPacks.Length; i++) {
+                achievementPacks[i].playerDamaged(newDamage, instigatedBy, DamageType);
+            }
+        }
+    } else {
+        for(i= 0; i < aliveMonsters.Length; i++) {
+            if (aliveMonsters[i].monster == injured) {
+                if (aliveMonsters[i].prevHeadHealth > KFMonster(injured).HeadHealth) {
+                    aliveMonsters[i].prevHeadHealth= KFMonster(injured).HeadHealth;
+                    aliveMonsters[i].prevHeadShot= true;
+                    headShot= true;
+                } else {
+                    aliveMonsters[i].prevHeadShot= false;
+                }
+                break;
+            }
+        }
+
+        saRepInfo= class'SAReplicationInfo'.static.findSAri(instigatedBy.PlayerReplicationInfo);
+        if (saRepInfo != none && KFMonster(injured) != none) {
+            saRepInfo.getAchievementPacks(achievementPacks);
+            for(i= 0; i < achievementPacks.Length; i++) {
+                achievementPacks[i].damagedMonster(newDamage, injured, DamageType, headShot);
+            }
         }
     }
     

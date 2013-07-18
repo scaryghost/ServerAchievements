@@ -22,6 +22,7 @@ struct Achievement {
     var bool disableSave;
 };
 
+var KFPlayerController ownerController;
 var PlayerController localController;
 var array<Achievement> achievements;
 var localized string packName;
@@ -110,6 +111,7 @@ simulated event PostNetBeginPlay() {
     if (ScriptedController(Owner) == none) {
         localController= Level.GetLocalPlayerController();
     }
+    ownerController= KFPlayerController(Owner);
 }
 
 simulated function flushToClient(int index, int progress, byte completed) {

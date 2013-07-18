@@ -19,6 +19,7 @@ struct Achievement {
 
     var byte timesNotified;
     var bool modified;
+    var bool disableSave;
 };
 
 var PlayerController localController;
@@ -36,7 +37,7 @@ function string serializeUserData() {
     local string data;
 
     for(i= 0; i < achievements.Length; i++) {
-        if (achievements[i].completed != 0 || (achievements[i].completed == 0 && achievements[i].progress != 0)) {
+        if (achievements[i].completed != 0 || (achievements[i].completed == 0 && !achievements[i].disableSave && achievements[i].progress != 0)) {
             if (serializedElems != 0) {
                 data$= ";";
             }
@@ -77,7 +78,11 @@ simulated function fillAchievementInfo(int index, out string title, out string d
     } else {
         image= achievements[index].image;
     }
-    maxProgress= achievements[index].maxProgress;
+    if (achievements[index].disableSave) {
+        maxProgress= 0;
+    } else {
+        maxProgress= achievements[index].maxProgress;
+    }
     progress= achievements[index].progress;
     completed= achievements[index].completed;
 }
@@ -144,7 +149,7 @@ function addProgress(int index, int offset) {
     achievements[index].progress+= offset;
     if (achievements[index].progress >= achievements[index].maxProgress) {
         achievementCompleted(index);
-    } else {
+    } else if (!achievements[index].disableSave) {
         flushToClient(index, achievements[index].progress, achievements[index].completed);
         if (achievements[index].progress >= achievements[index].notifyIncrement * (achievements[index].timesNotified + 1) * achievements[index].maxProgress) {
             notifyProgress(index);

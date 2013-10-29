@@ -5,7 +5,7 @@
 class SAReplicationInfo extends ReplicationInfo;
 
 var bool broadcastedWaveEnd, initialized, signalReload, signalToss, signalFire, objectiveMode;
-var string steamid64, offset;
+var string steamid64;
 var SAMutator mutRef;
 var PlayerReplicationInfo ownerPRI;
 var array<AchievementPack> achievementPacks;
@@ -47,11 +47,6 @@ simulated function Tick(float DeltaTime) {
             steamid64= PlayerController(Owner).GetPlayerIDHash();
         } else {
             steamid64= class'SAMutator'.default.localHostSteamID64;
-        }
-        if (!PlatformIsWindows()) {
-            log("Server not on Window OS.  Adding steamid64 offset (" $ steamid64 @ "+" @ offset $ ")");
-            class'Utility'.static.addOffset(steamid64, offset);
-            log("New steamid64:"@steamid64);
         }
     
         if (Role == ROLE_Authority) {
@@ -201,6 +196,5 @@ defaultproperties {
     RemoteRole=ROLE_SimulatedProxy
     bAlwaysRelevant=True
 
-    offset= "76561197960265728"
     broadcastedWaveEnd= true
 }

@@ -6,12 +6,13 @@ class SteamIDOffset extends Commandlet;
  
 function int Main(string TextParameters) {
     local class<Utility> utilityRef;
-    local string test;
+    local string test, offset;
     local array<string> parts;
 
+    offset= "76561197960265728";
     utilityRef= class<Utility>(DynamicLoadObject("ServerAchievements.Utility", class'Class'));
-    log(TextParameters @ "+" @ class'SAReplicationInfo'.default.offset @ "=");
-    utilityRef.static.addOffset(TextParameters, class'SAReplicationInfo'.default.offset);
+    log(TextParameters @ "+" @ offset @ "=");
+    utilityRef.static.addOffset(TextParameters, offset);
     log(TextParameters);
 
     test="1,2,";

@@ -39,17 +39,18 @@ function addMessage(string header, string body, Texture image) {
 function bool KeyEvent(EInputKey Key, EInputAction Action, float Delta ) {
     local string alias;
     local MidGamePanel panel;
+    local UT2K4PlayerLoginMenu escMenu;
 
     alias= ViewportOwner.Actor.ConsoleCommand("KEYBINDING"@ViewportOwner.Actor.ConsoleCommand("KEYNAME"@Key));
     if (Action == IST_Press && alias ~= "showmenu") {
         if (KFGUIController(ViewportOwner.GUIController).ActivePage == None) {
             ViewportOwner.Actor.ShowMenu();
         }
-        if (KFInvasionLoginMenu(KFGUIController(ViewportOwner.GUIController).ActivePage) != none && 
-                KFInvasionLoginMenu(KFGUIController(ViewportOwner.GUIController).ActivePage).c_Main.TabIndex(achievementPanel.caption) == -1) {
-            panel= MidGamePanel(KFInvasionLoginMenu(KFGUIController(ViewportOwner.GUIController).ActivePage).c_Main.AddTabItem(achievementPanel));
+        escMenu= UT2K4PlayerLoginMenu(KFGUIController(ViewportOwner.GUIController).ActivePage);
+        if (escMenu != none && escMenu.c_Main.TabIndex(achievementPanel.caption) == -1) {
+            panel= MidGamePanel(escMenu.c_Main.AddTabItem(achievementPanel));
             if (panel != none) {
-                panel.ModifiedChatRestriction= KFInvasionLoginMenu(KFGUIController(ViewportOwner.GUIController).ActivePage).UpdateChatRestriction;
+                panel.ModifiedChatRestriction= escMenu.UpdateChatRestriction;
             }
         }
     }

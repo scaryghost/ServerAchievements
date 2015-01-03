@@ -17,7 +17,7 @@ var float NotificationWidth, NotificationHeight, NotificationPhaseStartTime, Not
         NotificationShowTime, NotificationHideTime, NotificationHideDelay, NotificationBorderSize;
 var int NotificationPhase;
 var texture NotificationBackground;
-var string newLineSeparator;
+var string newLineSeparator, serverPerksAchvClass;
 
 event NotifyLevelChange() {
     Master.RemoveInteraction(self);
@@ -48,6 +48,9 @@ function bool KeyEvent(EInputKey Key, EInputAction Action, float Delta ) {
         }
         escMenu= UT2K4PlayerLoginMenu(KFGUIController(ViewportOwner.GUIController).ActivePage);
         if (escMenu != none && escMenu.c_Main.TabIndex(achievementPanel.caption) == -1) {
+            if (escMenu.IsA('SRInvasionLoginMenu')) {
+              achievementPanel.ClassName= serverPerksAchvClass;
+            }
             panel= MidGamePanel(escMenu.c_Main.AddTabItem(achievementPanel));
             if (panel != none) {
                 panel.ModifiedChatRestriction= escMenu.UpdateChatRestriction;
@@ -148,6 +151,8 @@ function PostRender(Canvas canvas) {
 }
 
 defaultproperties {
+    serverPerksAchvClass= "ServerAchievements.SRAchievementPanel"
+
     bActive= true
 
     NotificationWidth= 250.0

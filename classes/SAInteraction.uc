@@ -6,6 +6,11 @@
 class SAInteraction extends Interaction
   config(User);
 
+const PHASE_DONE= -1;
+const PHASE_SHOWING= 0;
+const PHASE_DELAYING= 1;
+const PHASE_HIDING= 2;
+
 enum PopupPosition {
     PP_TOP_LEFT,
     PP_TOP_CENTER,
@@ -42,7 +47,7 @@ function addMessage(string header, string body, Texture image) {
 
     if (messageQueue.Length == 1) {
         NotificationPhaseStartTime= ViewportOwner.Actor.Level.TimeSeconds;
-        NotificationPhase= 0;
+        NotificationPhase= PHASE_SHOWING;
         bVisible= true;
     }
 }
@@ -79,42 +84,42 @@ function PostRender(Canvas canvas) {
     local array<string> parts, wrappedText;
 
     TimeElapsed= ViewportOwner.Actor.Level.TimeSeconds - NotificationPhaseStartTime;
-    if (NotificationPhase == 0) { //Showing phase
-        if (TimeElapsed < NotificationShowTime) {
-            DrawHeight = (TimeElapsed / NotificationShowTime) * NotificationHeight;
-        }
-        else {
-            NotificationPhase= 1; // Delaying Phase
-            NotificationPhaseStartTime = ViewportOwner.Actor.Level.TimeSeconds - (TimeElapsed - NotificationShowTime);
-            DrawHeight = NotificationHeight;
-        }
-    }
-    else if (NotificationPhase == 1) {
-        if ( TimeElapsed < NotificationHideDelay ) {
-            DrawHeight = NotificationHeight;
-        }
-        else {
-            NotificationPhase = 3; // Hiding Phase
-            TimeElapsed -= NotificationHideDelay;
-            NotificationPhaseStartTime = ViewportOwner.Actor.Level.TimeSeconds - TimeElapsed;
-            DrawHeight = (TimeElapsed / NotificationHideTime) * NotificationHeight;
-        }
-    }
-    else {
-        if (TimeElapsed < NotificationHideTime) {
-            DrawHeight = (1.0 - (TimeElapsed / NotificationHideTime)) * NotificationHeight;
-        }
-        else {
-            // We're done
-            messageQueue.remove(0, 1);
-            if (messageQueue.Length != 0) {
-                NotificationPhaseStartTime= ViewportOwner.Actor.Level.TimeSeconds;
-                NotificationPhase= 0;
+    switch(NotificationPhase) {
+        case PHASE_SHOWING:
+            if (TimeElapsed < NotificationShowTime) {
+                DrawHeight= (TimeElapsed / NotificationShowTime) * NotificationHeight;
             } else {
-                bVisible= false;
+                NotificationPhase= PHASE_DELAYING;
+                NotificationPhaseStartTime= ViewportOwner.Actor.Level.TimeSeconds - (TimeElapsed - NotificationShowTime);
+                DrawHeight= NotificationHeight;
             }
-            return;
-        }
+            break;
+        case PHASE_DELAYING:
+            if (TimeElapsed < NotificationHideDelay ) {
+                DrawHeight= NotificationHeight;
+            } else {
+                NotificationPhase= PHASE_HIDING; // Hiding Phase
+                TimeElapsed-= NotificationHideDelay;
+                NotificationPhaseStartTime= ViewportOwner.Actor.Level.TimeSeconds - TimeElapsed;
+                DrawHeight= (1.0 - (TimeElapsed / NotificationHideTime)) * NotificationHeight;
+            }
+            break;
+        case PHASE_HIDING:
+            if (TimeElapsed < NotificationHideTime) {
+                DrawHeight= (1.0 - (TimeElapsed / NotificationHideTime)) * NotificationHeight;
+            } else {
+                // We're done
+                messageQueue.remove(0, 1);
+                if (messageQueue.Length != 0) {
+                    NotificationPhaseStartTime= ViewportOwner.Actor.Level.TimeSeconds;
+                    NotificationPhase= PHASE_SHOWING;
+                } else {
+                    NotificationPhase= PHASE_DONE;
+                    bVisible= false;
+                }
+                return;
+            }
+            break;
     }
 
     // Initialize the Canvas

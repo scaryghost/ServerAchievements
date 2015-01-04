@@ -32,7 +32,7 @@ var array<PopupMessage> messageQueue;
 var float NotificationWidth, NotificationHeight, NotificationPhaseStartTime, NotificationIconSpacing, 
         NotificationShowTime, NotificationHideTime, NotificationHideDelay, NotificationBorderSize;
 var int NotificationPhase;
-var texture NotificationBackground;
+var texture NotificationBackground, defaultAchievementImage;
 var string newLineSeparator, serverPerksAchvClass;
 
 event NotifyLevelChange() {
@@ -172,7 +172,11 @@ function PostRender(Canvas canvas) {
 
     IconSize= NotificationHeight - (NotificationBorderSize * 2.0);
     canvas.SetPos(TempX, TempY);
+    if (messageQueue[0].image == default.defaultAchievementImage) {
+        canvas.SetDrawColor(0, 255, 0, 255);
+    }
     canvas.DrawTile(messageQueue[0].image, IconSize, IconSize, 0, 0, messageQueue[0].image.USize, messageQueue[0].image.VSize);
+    canvas.SetDrawColor(255, 255, 255, 255);
     // Offset for desired Spacing between Icon and Text
     TempX += IconSize + NotificationIconSpacing;
 
@@ -199,10 +203,9 @@ function PostRender(Canvas canvas) {
 
 defaultproperties {
     ppPosition= PP_BOTTOM_CENTER
-
     serverPerksAchvClass= "ServerAchievements.SRAchievementPanel"
-
     bActive= true
+    newLineSeparator="|"
 
     NotificationWidth= 250.0
     NotificationHeight= 70
@@ -211,9 +214,8 @@ defaultproperties {
     NotificationHideDelay= 3.5
     NotificationBorderSize= 7.0
     NotificationIconSpacing= 10.0
-    NotificationBackground= Texture'ServerAchievements.HUD.notification'
+    NotificationBackground= Texture'KF_InterfaceArt_tex.HUD.Thin_border'
+    defaultAchievementImage= Texture'KFStoryGame_Tex.HUD.ObjComplete_Ico'
     
     achievementPanel=(ClassName="ServerAchievements.AchievementPanel",Caption="Achievements",Hint="View custom achievement progress")
-
-    newLineSeparator="|"
 }

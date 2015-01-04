@@ -50,7 +50,11 @@ function DrawAchievement(Canvas Canvas, int Index, float X, float Y, float Width
     // Draw Icon
     Canvas.SetPos(TempX, TempY);
     if (completed == 1) {
+        if (image == class'SAInteraction'.default.defaultAchievementImage) {
+            canvas.SetDrawColor(0, 255, 0, 255);
+        }
         Canvas.DrawTile(image, IconSize, IconSize, 0, 0, 64, 64);
+        canvas.SetDrawColor(255, 255, 255, 255);
     }
     else {
         Canvas.DrawTile(Texture'KillingFloorHUD.Achievements.KF_Achievement_Lock', IconSize, IconSize, 0, 0, 64, 64);

@@ -26,7 +26,10 @@ var KFPlayerController ownerController;
 var PlayerController localController;
 var array<Achievement> achievements;
 var localized string packName;
-var Texture defaultAchievementImage;
+/**
+ * @deprecated As of v1.3, use the version defined in SAInteraction
+ */
+var deprecated Texture defaultAchievementImage;
 
 replication {
     reliable if (Role == ROLE_AUTHORITY) 
@@ -75,7 +78,7 @@ simulated function fillAchievementInfo(int index, out string title, out string d
     title= achievements[index].title;
     description= achievements[index].description;
     if (achievements[index].image == none) {
-        image= defaultAchievementImage;
+        image= class'SAInteraction'.default.defaultAchievementImage;
     } else {
         image= achievements[index].image;
     }
@@ -126,7 +129,7 @@ simulated function notifyProgress(int index) {
     for(i= 0; localController != none && i < localController.Player.LocalInteractions.Length; i++) {
         if (SAInteraction(localController.Player.LocalInteractions[i]) != none) {
             if (achievements[index].image == none) {
-                usedImage= defaultAchievementImage;
+                usedImage= class'SAInteraction'.default.defaultAchievementImage;
             } else {
                 usedImage= achievements[index].image;
             }
@@ -168,7 +171,7 @@ simulated function localAchievementCompleted(int index) {
     for(i= 0; localController != none && i < localController.Player.LocalInteractions.Length; i++) {
         if (SAInteraction(localController.Player.LocalInteractions[i]) != none) {
             if (achievements[index].image == none) {
-                usedImage= defaultAchievementImage;
+                usedImage= class'SAInteraction'.default.defaultAchievementImage;
             } else {
                 usedImage= achievements[index].image;
             }
@@ -180,6 +183,6 @@ simulated function localAchievementCompleted(int index) {
 }
 
 defaultproperties {
-    defaultAchievementImage= Texture'ServerAchievements.HUD.DefaultIcon'
+    defaultAchievementImage= Texture'KFStoryGame_Tex.HUD.ObjComplete_Ico'
 }
 

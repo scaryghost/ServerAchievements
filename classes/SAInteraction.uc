@@ -3,7 +3,17 @@
  * adding a tab to the mid game menu
  * @author etsai (Scary Ghost)
  */
-class SAInteraction extends Interaction;
+class SAInteraction extends Interaction
+  config(User);
+
+enum PopupPosition {
+    PP_TOP_LEFT,
+    PP_TOP_CENTER,
+    PP_TOP_RIGHT,
+    PP_BOTTOM_LEFT,
+    PP_bOTTOM_CENTER,
+    PP_BOTTOM_RIGHT
+};
 
 struct PopupMessage {
     var string header;
@@ -11,6 +21,7 @@ struct PopupMessage {
     var Texture image;
 };
 
+var() config PopupPosition ppPosition;
 var GUI.GUITabItem achievementPanel;
 var array<PopupMessage> messageQueue;
 var float NotificationWidth, NotificationHeight, NotificationPhaseStartTime, NotificationIconSpacing, 
@@ -112,8 +123,39 @@ function PostRender(Canvas canvas) {
     canvas.SetDrawColor(255, 255, 255, 255);
 
     // Calc Notification's Screen Offset
-    TempX = (canvas.ClipX / 2.0) - (NotificationWidth / 2.0);
-    TempY = canvas.ClipY - DrawHeight;
+    switch(ppPosition) {
+        case PP_TOP_LEFT:
+        case PP_BOTTOM_LEFT:
+            TempX= 0;
+            break;
+        case PP_TOP_CENTER:
+        case PP_BOTTOM_CENTER:
+            TempX = (canvas.ClipX / 2.0) - (NotificationWidth / 2.0);
+            break;
+        case PP_TOP_RIGHT:
+        case PP_BOTTOM_RIGHT:
+            TempX= canvas.ClipX - NotificationWidth;
+            break;
+        default:
+            Warn("Unrecognized position:" @ ppPosition);
+            break;
+    }
+
+    switch(ppPosition) {
+        case PP_BOTTOM_LEFT:
+        case PP_BOTTOM_CENTER:
+        case PP_BOTTOM_RIGHT:
+            TempY= canvas.ClipY - DrawHeight;
+            break;
+        case PP_TOP_LEFT:
+        case PP_TOP_CENTER:
+        case PP_TOP_RIGHT:
+            TempY= DrawHeight - NotificationHeight;
+            break;
+        default:
+            Warn("Unrecognized position:" @ ppPosition);
+            break;
+    }
 
     // Draw the Background
     canvas.SetPos(TempX, TempY);
@@ -151,6 +193,8 @@ function PostRender(Canvas canvas) {
 }
 
 defaultproperties {
+    ppPosition= PP_BOTTOM_CENTER
+
     serverPerksAchvClass= "ServerAchievements.SRAchievementPanel"
 
     bActive= true

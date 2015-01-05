@@ -39,19 +39,25 @@ simulated function Tick(float DeltaTime) {
     local AchievementPack pack;
     local HealingProjectile projectile;
     local int i;
+    local PlayerController ownerPC;
 
     super.Tick(DeltaTime);
 
     if (!initialized) {
-        if (PlayerController(Owner) != Level.GetLocalPlayerController()) {
-            steamid64= PlayerController(Owner).GetPlayerIDHash();
-        } else {
-            steamid64= class'SAMutator'.default.localHostSteamID64;
+        ownerPC= PlayerController(Owner);
+        if (ownerPC != None) {
+            if (Level.NetMode != NM_DedicatedServer && ownerPC.Player != none && 
+                    ownerPC.Player.GUIController != none) {
+                steamid64= ownerPC.Player.GUIController.SteamGetUserID();
+            } else {
+                steamid64= ownerPC.SteamStatsAndAchievements.GetSteamUserID();
+            }
         }
-    
+
         if (Role == ROLE_Authority) {
             mutRef.sendAchievements(self);
         }
+
         foreach DynamicActors(class'AchievementPack', pack) {
             if (pack.Owner == Owner) {
                 addAchievementPack(pack);

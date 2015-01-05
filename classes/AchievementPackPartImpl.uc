@@ -25,11 +25,9 @@ struct Achievement {
 var KFPlayerController ownerController;
 var PlayerController localController;
 var array<Achievement> achievements;
-var localized string packName;
-/**
- * @deprecated As of v1.3, use the version defined in SAInteraction
- */
-var deprecated Texture defaultAchievementImage;
+var localized string packName, achvUnlockedMsg, achvInProgressMsg;
+/** default image is the same as the one defined in SAInteraction */
+var Texture defaultAchievementImage;
 
 replication {
     reliable if (Role == ROLE_AUTHORITY) 
@@ -78,7 +76,7 @@ simulated function fillAchievementInfo(int index, out string title, out string d
     title= achievements[index].title;
     description= achievements[index].description;
     if (achievements[index].image == none) {
-        image= class'SAInteraction'.default.defaultAchievementImage;
+        image= defaultAchievementImage;
     } else {
         image= achievements[index].image;
     }
@@ -129,11 +127,11 @@ simulated function notifyProgress(int index) {
     for(i= 0; localController != none && i < localController.Player.LocalInteractions.Length; i++) {
         if (SAInteraction(localController.Player.LocalInteractions[i]) != none) {
             if (achievements[index].image == none) {
-                usedImage= class'SAInteraction'.default.defaultAchievementImage;
+                usedImage= defaultAchievementImage;
             } else {
                 usedImage= achievements[index].image;
             }
-            SAInteraction(localController.Player.LocalInteractions[i]).addMessage("Achievement In Progress", 
+            SAInteraction(localController.Player.LocalInteractions[i]).addMessage(achvInProgressMsg, 
                 achievements[index].title @ class'SAInteraction'.default.newLineSeparator $ 
                 "(" $ achievements[index].progress $ "/" $ achievements[index].maxProgress $ ")", usedImage);
             break;
@@ -171,11 +169,11 @@ simulated function localAchievementCompleted(int index) {
     for(i= 0; localController != none && i < localController.Player.LocalInteractions.Length; i++) {
         if (SAInteraction(localController.Player.LocalInteractions[i]) != none) {
             if (achievements[index].image == none) {
-                usedImage= class'SAInteraction'.default.defaultAchievementImage;
+                usedImage= defaultAchievementImage;
             } else {
                 usedImage= achievements[index].image;
             }
-            SAInteraction(localController.Player.LocalInteractions[i]).addMessage("Achievement Unlocked!", 
+            SAInteraction(localController.Player.LocalInteractions[i]).addMessage(achvUnlockedMsg, 
                 packName $ class'SAInteraction'.default.newLineSeparator $ achievements[index].title, usedImage);
             break;
         }
@@ -184,5 +182,7 @@ simulated function localAchievementCompleted(int index) {
 
 defaultproperties {
     defaultAchievementImage= Texture'KFStoryGame_Tex.HUD.ObjComplete_Ico'
+    achvUnlockedMsg= "Achievement Unlocked!"
+    achvInProgressMsg="Achievement In Progress" 
 }
 

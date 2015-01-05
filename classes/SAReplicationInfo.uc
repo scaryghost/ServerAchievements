@@ -2,7 +2,7 @@
  * Custom replication info class for ServerAchievements
  * @author etsai (Scary Ghost)
  */
-class SAReplicationInfo extends ReplicationInfo;
+class SAReplicationInfo extends LinkedReplicationInfo;
 
 var bool broadcastedWaveEnd, initialized, signalReload, signalToss, signalFire, objectiveMode;
 var string steamid64;
@@ -50,7 +50,7 @@ simulated function Tick(float DeltaTime) {
                     ownerPC.Player.GUIController != none) {
                 steamid64= ownerPC.Player.GUIController.SteamGetUserID();
             } else {
-                steamid64= ownerPC.SteamStatsAndAchievements.GetSteamUserID();
+                steamid64= ownerPC.GetPlayerIDHash();
             }
         }
 
@@ -186,16 +186,22 @@ simulated function getAchievementPacks(out array<AchievementPack> packs) {
 }
 
 static function SAReplicationInfo findSAri(PlayerReplicationInfo pri) {
-    local SAReplicationInfo repInfo;
+    local LinkedReplicationInfo lriIt;
+    local SAReplicationInfo mspIt;
 
-    if (pri == none)
-        return none;
-
-    foreach pri.DynamicActors(Class'SAReplicationInfo', repInfo)
-        if (repInfo.ownerPRI == pri)
-            return repInfo;
- 
-    return none;
+    if (pri == None) {
+        return None;
+    }
+    for(lriIt= pri.CustomReplicationInfo; lriIt != None && lriIt.class != class'SAReplicationInfo';
+            lriIt= lriIt.NextReplicationInfo) {
+    }
+    if (lriIt == None) {
+        foreach pri.DynamicActors(class'SAReplicationInfo', mspIt)
+            if (mspIt.ownerPRI == pri) 
+                return mspIt;
+        return None;
+    }
+    return SAReplicationInfo(lriIt);
 }
 
 defaultproperties {

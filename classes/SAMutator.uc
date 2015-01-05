@@ -81,6 +81,8 @@ function bool CheckReplacement(Actor Other, out byte bSuperRelevant) {
     if (PlayerReplicationInfo(Other) != none && Other.Owner != none) {
         pri= PlayerReplicationInfo(Other);
         saRepInfo= Spawn(class'SAReplicationInfo', pri.Owner);
+        saRepInfo.NextReplicationInfo= PlayerReplicationInfo(Other).CustomReplicationInfo;
+        PlayerReplicationInfo(Other).CustomReplicationInfo= saRepInfo;
         saRepInfo.ownerPRI= pri;
         saRepInfo.mutRef= Self;
     } else if (KFMonster(Other) != none) {
